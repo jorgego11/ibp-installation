@@ -1,7 +1,7 @@
 #!/bin/bash
 
 #
-# To run the script you need to modify the: ibp4ocp.json 
+# To run the script you need to modify the: ibp4k8s.json 
 # file located in this same directory.
 #
 #  A sample is shown below.  Some of the json data is filled in and some you must obtain.
@@ -12,7 +12,7 @@
 #    From the web console, click the dropdown menu in the upper right corner and then click Copy Login Command. Paste the copied command in your terminal window.
 #    The command looks similar to the following example:
 #    oc login cxxx-e.us-south.containers.cloud.ibm.com:31974 --token=xxxxxxx
-#    ibp4ocp.json requires this the LOGIN key have a value of xxx-e.us-south.containers.cloud.ibm.com:31974 --token=xxxxxxx
+#    ibp4k8s.json requires this the LOGIN key have a value of xxx-e.us-south.containers.cloud.ibm.com:31974 --token=xxxxxxx
 #     
 #  USER:
 #    THE user is the user name associated with your docker username.
@@ -25,8 +25,8 @@
 #    The password to your local registry.  
 #    This is obtained by making a request in https://github.ibm.com/IBM-Blockchain/ibp-requests/blob/master/ibp-on-openshift/README.md. 
 #
-#  PROJECT_NAME:
-#    The name of your kubernetes project/namespace.
+#  NAMESPACE:
+#    The name of your kubernetes namespace.
 #
 #  PASSWORD:
 #    The password you will use to login to your IBP Console.  You will have to immediately change this
@@ -40,14 +40,13 @@
 #    removing console and /k8s/cluster/projects.
 #
 #
-# Sample ibp4ocp.json
+# Sample ibp4k8s.json
 # {
-#"LOGIN" : "<LOGIN>",
 #"LOCAL_REGISTRY" : "ip-ibp-images-team-docker-remote.artifactory.swg-devops.com/cp",
 #"USER" : "<USER>",
 #"EMAIL" : "<EMAIL>",
 #"LOCAL_REGISTRY_PASSWORD": "<LOCAL_REGISTRY_PASSWORD>",
-#"PROJECT_NAME": "<PROJECT_NAME>",
+#"NAMESPACE": "<NAMESPACE>",
 #"PASSWORD": "<PASSWORD>",
 #"DOMAIN": "<DOMAIN>"
 # }
@@ -57,30 +56,25 @@
 # Exit if any command fails
 set -e
 
-echo -e ""
-
-LOGIN=`jq -r .LOGIN ibp4ocp.json`
-echo -e "LOGIN environment: $LOGIN"
-
-LOCAL_REGISTRY=`jq -r .LOCAL_REGISTRY ibp4ocp.json`
+LOCAL_REGISTRY=`jq -r .LOCAL_REGISTRY ibp4k8s.json`
 echo -e "LOCAL_REGISTRY to be used is: $LOCAL_REGISTRY"
 
-USER=`jq -r .USER ibp4ocp.json`
+USER=`jq -r .USER ibp4k8s.json`
 echo -e "USER to run under is: $USER"
 
-EMAIL=`jq -r .EMAIL ibp4ocp.json`
+EMAIL=`jq -r .EMAIL ibp4k8s.json`
 echo -e "EMAIL to use for the IBP console is: $EMAIL"
 
-LOCAL_REGISTRY_PASSWORD=`jq -r .LOCAL_REGISTRY_PASSWORD ibp4ocp.json`
+LOCAL_REGISTRY_PASSWORD=`jq -r .LOCAL_REGISTRY_PASSWORD ibp4k8s.json`
 echo -e "LOCAL_REGISTRY_PASSWORD entitlement key is: $LOCAL_REGISTRY_PASSWORD"
 
-PROJECT_NAME=`jq -r .PROJECT_NAME ibp4ocp.json`
-echo -e "PROJECT_NAME is: $PROJECT_NAME"
+NAMESPACE=`jq -r .NAMESPACE ibp4k8s.json`
+echo -e "NAMESPACE is: $NAMESPACE"
 
-PASSWORD=`jq -r .PASSWORD ibp4ocp.json`
+PASSWORD=`jq -r .PASSWORD ibp4k8s.json`
 echo -e "IBP Console Password is: $PASSWORD"
 
-DOMAIN=`jq -r .DOMAIN ibp4ocp.json`
+DOMAIN=`jq -r .DOMAIN ibp4k8s.json`
 echo -e "OpenShift Domain being used: $DOMAIN"
 
 ### Checks
@@ -95,79 +89,70 @@ fi
 
 #### Start deployment
 echo -e "Starting IBP deployment....\n"
-oc login https://$LOGIN | grep "Logged"
 
-#
-
-
+### Get pods and storageclasses
 kubectl get pods
-kubectl create namespace $PROJECT_NAME
 kubectl get storageclasses
 
+### Create k8s namespace for deployment
+kubectl create namespace $NAMESPACE
 
+### Define pod security policy (psp)
 (
 cat <<EOF
-allowHostDirVolumePlugin: true
-allowHostIPC: true
-allowHostNetwork: true
-allowHostPID: true
-allowHostPorts: true
-allowPrivilegeEscalation: true
-allowPrivilegedContainer: true
-allowedCapabilities:
-- NET_BIND_SERVICE
-- CHOWN
-- DAC_OVERRIDE
-- SETGID
-- SETUID
-- FOWNER
-apiVersion: security.openshift.io/v1
-defaultAddCapabilities: null
-fsGroup:
-  type: RunAsAny
-groups:
-- system:cluster-admins
-- system:authenticated
-kind: SecurityContextConstraints
+apiVersion: extensions/v1beta1
+kind: PodSecurityPolicy
 metadata:
-  name: $PROJECT_NAME
-readOnlyRootFilesystem: false
-requiredDropCapabilities: null
-runAsUser:
-  type: RunAsAny
-seLinuxContext:
-  type: RunAsAny
-supplementalGroups:
-  type: RunAsAny
-volumes:
-- "*"
+  name: $NAMESPACE
+spec:
+  hostIPC: false
+  hostNetwork: false
+  hostPID: false
+  privileged: true
+  allowPrivilegeEscalation: true
+  readOnlyRootFilesystem: false
+  seLinux:
+    rule: RunAsAny
+  supplementalGroups:
+    rule: RunAsAny
+  runAsUser:
+    rule: RunAsAny
+  fsGroup:
+    rule: RunAsAny
+  requiredDropCapabilities:
+  - ALL
+  allowedCapabilities:
+  - NET_BIND_SERVICE
+  - CHOWN
+  - DAC_OVERRIDE
+  - SETGID
+  - SETUID
+  - FOWNER
+  volumes:
+  - '*'
 
 EOF
-)> ibp-scc.yaml
+)> ibp-psp.yaml
 
-oc apply -f ibp-scc.yaml -n $PROJECT_NAME | grep "created"
+kubectl apply -f ibp-psp.yaml -n $NAMESPACE | grep "created"
 
-
-oc adm policy add-scc-to-user $PROJECT_NAME system:serviceaccounts:$PROJECT_NAME | grep "added"
-
-
-
+### Define cluster role
 (
 cat<<EOF
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRole
 metadata:
   creationTimestamp: null
-  name: $PROJECT_NAME
+  name: ibp-operator
 rules:
 - apiGroups:
-  - apiextensions.k8s.io
+  - extensions
+  resourceNames:
+  - ibm-blockchain-platform-psp
   resources:
-  - persistentvolumeclaims
-  - persistentvolumes
-  - customresourcedefinitions
+  - podsecuritypolicies
   verbs:
-  - '*'
+  - use
 - apiGroups:
   - "*"
   resources:
@@ -184,41 +169,16 @@ rules:
   - rolebindings
   - serviceaccounts
   - nodes
-  - routes
-  - routes/custom-host
   verbs:
   - '*'
 - apiGroups:
-  - ""
+  - apiextensions.k8s.io
   resources:
-  - namespaces
-  - nodes
-  verbs:
-  - get
-- apiGroups:
-  - apps
-  resources:
-  - deployments
-  - daemonsets
-  - replicasets
-  - statefulsets
+  - persistentvolumeclaims
+  - persistentvolumes
+  - customresourcedefinitions
   verbs:
   - '*'
-- apiGroups:
-  - monitoring.coreos.com
-  resources:
-  - servicemonitors
-  verbs:
-  - get
-  - create
-- apiGroups:
-  - apps
-  resourceNames:
-  - ibp-operator
-  resources:
-  - deployments/finalizers
-  verbs:
-  - update
 - apiGroups:
   - ibp.com
   resources:
@@ -236,43 +196,26 @@ rules:
   - '*'
   verbs:
   - '*'
+- apiGroups:
+  - apps
+  resources:
+  - deployments
+  - daemonsets
+  - replicasets
+  - statefulsets
+  verbs:
+  - '*'
 
 EOF
 )> ibp-clusterrole.yaml
 
-oc apply -f ibp-clusterrole.yaml -n $PROJECT_NAME | grep "created"
+kubectl apply -f ibp-clusterrole.yaml -n $NAMESPACE | grep "created"
 
+### Define cluster role binding
+kubectl -n $NAMESPACE create rolebinding ibp-operator-rolebinding --clusterrole=ibp-operator --group=system:serviceaccounts:$NAMESPACE
 
-oc adm policy add-scc-to-group $PROJECT_NAME system:serviceaccounts:$PROJECT_NAME | grep "added"
-
-
-(
-cat <<EOF
-kind: ClusterRoleBinding
-apiVersion: rbac.authorization.k8s.io/v1
-metadata:
-  name: $PROJECT_NAME
-subjects:
-- kind: ServiceAccount
-  name: default
-  namespace: $PROJECT_NAME
-roleRef:
-  kind: ClusterRole
-  name: $PROJECT_NAME
-  apiGroup: rbac.authorization.k8s.io
-
-EOF
-) > ibp-clusterrolebinding.yaml
-
-
-oc apply -f ibp-clusterrolebinding.yaml -n $PROJECT_NAME | grep "created"
-
-
-oc adm policy add-cluster-role-to-user $PROJECT_NAME system:serviceaccounts:$PROJECT_NAME | grep "added"
-
-
-kubectl create secret docker-registry docker-key-secret --docker-server=$LOCAL_REGISTRY --docker-username=$USER --docker-password=$LOCAL_REGISTRY_PASSWORD --docker-email=$EMAIL -n $PROJECT_NAME | grep "created"
-
+### Create k8s secret for downloading IBP images
+kubectl create secret docker-registry docker-key-secret --docker-server=$LOCAL_REGISTRY --docker-username=$USER --docker-password=$LOCAL_REGISTRY_PASSWORD --docker-email=$EMAIL -n $NAMESPACE | grep "created"
 
 (
 cat <<EOF
@@ -376,13 +319,12 @@ spec:
 EOF
 ) > ibp-operator.yaml
 
-kubectl apply -f ibp-operator.yaml -n $PROJECT_NAME | grep "created"
+kubectl apply -f ibp-operator.yaml -n $NAMESPACE | grep "created"
 
-kubectl get deployment -n $PROJECT_NAME | grep "ibp-operator"
+kubectl get deployment -n $NAMESPACE | grep "ibp-operator"
 
-
-# wait 15 seconds before continuing... 
-# the operator should be running on your namespace before you can apply a custom resource to start the IBM Blockchain Platform console on your cluster.
+### Wait 15 seconds before continuing... the operator should be running on your namespace
+### before you can apply the IBM Blockchain Platform console object.
 sleep 15
 
 (
@@ -456,26 +398,24 @@ spec:
 EOF
 ) > ibp-console.yaml
 
-kubectl apply -f ibp-console.yaml -n $PROJECT_NAME | grep "created"
-
+kubectl apply -f ibp-console.yaml -n $NAMESPACE | grep "created"
 
 ####
 #### Ok...deployment is complete.  Verifying the installation.
 ####
 
-kubectl get deployment -n $PROJECT_NAME | grep "operator"
+kubectl get deployment -n $NAMESPACE | grep "operator"
 
-kubectl get deployment -n $PROJECT_NAME | grep "console"
-
+kubectl get deployment -n $NAMESPACE | grep "console"
 
 echo -e "\nThe installation is now complete!\n"
 echo -e "Note: It will take approximately 10 minutes for the console to be available."
 echo -e "      You can issue:"
-echo -e "      kubectl get deployment -n $PROJECT_NAME"
+echo -e "      kubectl get deployment -n $NAMESPACE"
 echo -e "      and when both the ibp-operator and ibpconsole are in the 'Available' state, you are ready to roll!"
 echo -e ""
 echo  "To launch the IBP Console go to:"
-echo -e "https://$PROJECT_NAME-ibpconsole-console.$DOMAIN:443"
+echo -e "https://$NAMESPACE-ibpconsole-console.$DOMAIN:443"
 echo -e ""
 
 exit
