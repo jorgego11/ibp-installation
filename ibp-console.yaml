@@ -1,0 +1,66 @@
+apiVersion: ibp.com/v1alpha1
+kind: IBPConsole
+metadata:
+  name: ibpconsole
+spec:
+  license: accept
+  serviceAccountName: default
+  email: "ricardo.olivieri@us.ibm.com"
+  password: "passwd"
+  image:
+      imagePullSecret: docker-key-secret
+      consoleInitImage: ip-ibp-images-team-docker-remote.artifactory.swg-devops.com/cp/ibp-init
+      consoleInitTag: 2.1.0-20190924-amd64
+      consoleImage: ip-ibp-images-team-docker-remote.artifactory.swg-devops.com/cp/ibp-console
+      consoleTag: 2.1.0-20190924-amd64
+      configtxlatorImage: ip-ibp-images-team-docker-remote.artifactory.swg-devops.com/cp/ibp-utilities
+      configtxlatorTag: 1.4.3-20190924-amd64
+      couchdbImage: ip-ibp-images-team-docker-remote.artifactory.swg-devops.com/cp/ibp-couchdb
+      couchdbTag: 2.3.1-20190924-amd64
+      deployerImage: ip-ibp-images-team-docker-remote.artifactory.swg-devops.com/cp/ibp-deployer
+      deployerTag: 2.1.0-20190924-amd64
+  versions:
+      ca:
+        1.4.3-0:
+          default: true
+          version: 1.4.3-0
+          image:
+            caInitImage: ip-ibp-images-team-docker-remote.artifactory.swg-devops.com/cp/ibp-ca-init
+            caInitTag: 2.1.0-20190924-amd64
+            caImage: ip-ibp-images-team-docker-remote.artifactory.swg-devops.com/cp/ibp-ca
+            caTag: 1.4.3-20190924-amd64
+      peer:
+        1.4.3-0:
+          default: true
+          version: 1.4.3-0
+          image:
+            peerInitImage: ip-ibp-images-team-docker-remote.artifactory.swg-devops.com/cp/ibp-init
+            peerInitTag: 2.1.0-20190924-amd64
+            peerImage: ip-ibp-images-team-docker-remote.artifactory.swg-devops.com/cp/ibp-peer
+            peerTag: 1.4.3-20190924-amd64
+            dindImage: ip-ibp-images-team-docker-remote.artifactory.swg-devops.com/cp/ibp-dind
+            dindTag: 1.4.3-20190924-amd64
+            fluentdImage: ip-ibp-images-team-docker-remote.artifactory.swg-devops.com/cp/ibp-fluentd
+            fluentdTag: 2.1.0-20190924-amd64
+            grpcwebImage: ip-ibp-images-team-docker-remote.artifactory.swg-devops.com/cp/ibp-grpcweb
+            grpcwebTag: 2.1.0-20190924-amd64
+            couchdbImage: ip-ibp-images-team-docker-remote.artifactory.swg-devops.com/cp/ibp-couchdb
+            couchdbTag: 2.3.1-20190924-amd64
+      orderer:
+        1.4.3-0:
+          default: true
+          version: 1.4.3-0
+          image:
+            ordererInitImage: ip-ibp-images-team-docker-remote.artifactory.swg-devops.com/cp/ibp-init
+            ordererInitTag: 2.1.0-20190924-amd64
+            ordererImage: ip-ibp-images-team-docker-remote.artifactory.swg-devops.com/cp/ibp-orderer
+            ordererTag: 1.4.3-20190924-amd64
+            grpcwebImage: ip-ibp-images-team-docker-remote.artifactory.swg-devops.com/cp/ibp-grpcweb
+            grpcwebTag: 2.1.0-20190924-amd64
+  networkinfo:
+    domain: mycluster-ibp-e57f8f8172b4d6189c37381a765b03ef-0001.us-east.containers.appdomain.cloud
+  storage:
+    console:
+      class: default
+      size: 10Gi
+
