@@ -1,0 +1,10 @@
+{
+    "LOGIN": "c100-e.us-east.containers.cloud.ibm.com:31808 --token=VoqxVBrOUN9ztAlRxldyOgxdZ6WwWppR91OBBTrWWfA",
+    "LOCAL_REGISTRY": "ip-ibp-images-team-docker-remote.artifactory.swg-devops.com/cp",
+    "USER": "ricardo.olivieri@us.ibm.com",
+    "EMAIL": "ricardo.olivieri@us.ibm.com",
+    "LOCAL_REGISTRY_PASSWORD": "<>",
+    "PROJECT_NAME": "ibp-installation-test",
+    "PASSWORD": "passwd",
+    "DOMAIN": "mycluster-ibp-e57f8f8172b4d6189c37381a765b03ef-0001.us-east.containers.appdomain.cloud"
+}

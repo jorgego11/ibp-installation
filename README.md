@@ -1,1 +1,1 @@
-# ibp-oc-installation
+# ibp-installation
