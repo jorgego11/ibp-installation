@@ -395,7 +395,7 @@ spec:
   networkinfo:
     consolePort: 30000
     proxyPort: 30001
-    domain: ProxyIP
+    domain: <proxyIP>
   storage:
     console:
       class: default
