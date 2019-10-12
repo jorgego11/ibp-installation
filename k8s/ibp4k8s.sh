@@ -60,7 +60,7 @@ EMAIL=`jq -r .EMAIL ibp4k8s.json`
 log "EMAIL to use for the IBP console is: $EMAIL"
 
 LOCAL_REGISTRY_PASSWORD=`jq -r .LOCAL_REGISTRY_PASSWORD ibp4k8s.json`
-log "LOCAL_REGISTRY_PASSWORD entitlement key is: $LOCAL_REGISTRY_PASSWORD"
+#log "LOCAL_REGISTRY_PASSWORD entitlement key is: $LOCAL_REGISTRY_PASSWORD"
 
 NAMESPACE=`jq -r .NAMESPACE ibp4k8s.json`
 log "NAMESPACE is: $NAMESPACE"
