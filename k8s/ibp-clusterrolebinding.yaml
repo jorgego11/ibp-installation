@@ -8,6 +8,6 @@ subjects:
   namespace: ibp-installation-test
 roleRef:
   kind: ClusterRole
-  name: ibp-installation-test
+  name: ibp-operator
   apiGroup: rbac.authorization.k8s.io
 

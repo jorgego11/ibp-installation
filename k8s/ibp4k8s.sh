@@ -211,6 +211,19 @@ EOF
 
 kubectl apply -f ibp-clusterrole.yaml -n $NAMESPACE #| grep "created"
 
+# Define service account
+(
+cat<<EOF
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: default
+EOF
+
+)> ibp-serviceaccount.yaml
+
+kubectl apply -f ibp-serviceaccount.yaml -n $NAMESPACE 
+
 ### Define role binding
 kubectl -n $NAMESPACE create rolebinding ibp-operator-rolebinding --clusterrole=ibp-operator --group=system:serviceaccounts:$NAMESPACE
 
@@ -227,7 +240,7 @@ subjects:
   namespace: $NAMESPACE
 roleRef:
   kind: ClusterRole
-  name: $NAMESPACE
+  name: ibp-operator
   apiGroup: rbac.authorization.k8s.io
 
 EOF
