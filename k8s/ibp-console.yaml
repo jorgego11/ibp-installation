@@ -60,7 +60,7 @@ spec:
   networkinfo:
     consolePort: 30000
     proxyPort: 30001
-    domain: c5.dal12.containers.cloud.ibm.com
+    domain: 10.76.68.169
   storage:
     console:
       class: default
