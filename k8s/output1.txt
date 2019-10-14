@@ -1,0 +1,85 @@
+[Mon Oct 14 13:29:39 UTC 2019]: LOCAL_REGISTRY to be used is: ip-ibp-images-team-docker-remote.artifactory.swg-devops.com
+[Mon Oct 14 13:29:39 UTC 2019]: USER to run under is: ricardo.olivieri@us.ibm.com
+[Mon Oct 14 13:29:39 UTC 2019]: EMAIL to use for the IBP console is: ricardo.olivieri@us.ibm.com
+[Mon Oct 14 13:29:39 UTC 2019]: NAMESPACE is: ibp-installation-test
+[Mon Oct 14 13:29:39 UTC 2019]: IBP Console Password is: passwd
+[Mon Oct 14 13:29:39 UTC 2019]: Domain being used: <domain>
+[Mon Oct 14 13:29:39 UTC 2019]: KUBECONFIG is set to: /Users/olivieri/.bluemix/plugins/container-service/clusters/bmgfkped0vi1a9dqv8pg/kube-config-hou02-mycluster.yml
+[Mon Oct 14 13:29:39 UTC 2019]: Starting IBP deployment....\n
+No resources found.
+No resources found.
+namespace/ibp-installation-test created
+podsecuritypolicy.extensions/ibm-blockchain-platform-psp configured
+clusterrole.rbac.authorization.k8s.io/ibp-operator configured
+rolebinding.rbac.authorization.k8s.io/ibp-operator-rolebinding created
+clusterrolebinding.rbac.authorization.k8s.io/ibp-installation-test unchanged
+secret/docker-key-secret created
+deployment.apps/ibp-operator created
+NAME           READY   UP-TO-DATE   AVAILABLE   AGE
+ibp-operator   0/1     1            0           0s
+Name:           ibp-operator-899c5f7b9-tdngh
+Namespace:      ibp-installation-test
+Priority:       0
+Node:           10.76.68.169/10.76.68.169
+Start Time:     Mon, 14 Oct 2019 09:29:44 -0400
+Labels:         app.kubernetes.io/instance=ibpoperator
+                app.kubernetes.io/managed-by=ibp-operator
+                app.kubernetes.io/name=ibp
+                helm.sh/chart=ibm-ibp
+                name=ibp-operator
+                pod-template-hash=899c5f7b9
+                release=operator
+Annotations:    kubernetes.io/psp: ibm-blockchain-platform-psp
+                productID: 54283fa24f1a4e8589964e6e92626ec4
+                productName: IBM Blockchain Platform
+                productVersion: 2.1.0
+Status:         Pending
+IP:             
+Controlled By:  ReplicaSet/ibp-operator-899c5f7b9
+Containers:
+  ibp-operator:
+    Container ID:  
+    Image:         ip-ibp-images-team-docker-remote.artifactory.swg-devops.com/cp/ibp-operator:2.1.0-20190924-amd64
+    Image ID:      
+    Port:          <none>
+    Host Port:     <none>
+    Command:
+      ibp-operator
+    State:          Waiting
+      Reason:       ContainerCreating
+    Ready:          False
+    Restart Count:  0
+    Limits:
+      cpu:     100m
+      memory:  200Mi
+    Requests:
+      cpu:      100m
+      memory:   200Mi
+    Liveness:   tcp-socket :8383 delay=10s timeout=5s period=10s #success=1 #failure=5
+    Readiness:  tcp-socket :8383 delay=10s timeout=5s period=5s #success=1 #failure=3
+    Environment:
+      WATCH_NAMESPACE:  ibp-installation-test (v1:metadata.namespace)
+      POD_NAME:         ibp-operator-899c5f7b9-tdngh (v1:metadata.name)
+      OPERATOR_NAME:    ibp-operator
+      ISOPENSHIFT:      false
+    Mounts:
+      /var/run/secrets/kubernetes.io/serviceaccount from default-token-626rx (ro)
+Conditions:
+  Type              Status
+  Initialized       True 
+  Ready             False 
+  ContainersReady   False 
+  PodScheduled      True 
+Volumes:
+  default-token-626rx:
+    Type:        Secret (a volume populated by a Secret)
+    SecretName:  default-token-626rx
+    Optional:    false
+QoS Class:       Guaranteed
+Node-Selectors:  <none>
+Tolerations:     node.kubernetes.io/not-ready:NoExecute for 600s
+                 node.kubernetes.io/unreachable:NoExecute for 600s
+Events:
+  Type    Reason     Age   From               Message
+  ----    ------     ----  ----               -------
+  Normal  Scheduled  0s    default-scheduler  Successfully assigned ibp-installation-test/ibp-operator-899c5f7b9-tdngh to 10.76.68.169
