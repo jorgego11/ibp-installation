@@ -211,9 +211,29 @@ EOF
 
 kubectl apply -f ibp-clusterrole.yaml -n $NAMESPACE #| grep "created"
 
+### Define role binding
+kubectl -n $NAMESPACE create rolebinding ibp-operator-rolebinding --clusterrole=ibp-operator --group=system:serviceaccounts:$NAMESPACE
 
 ### Define cluster role binding
-kubectl -n $NAMESPACE create rolebinding ibp-operator-rolebinding --clusterrole=ibp-operator --group=system:serviceaccounts:$NAMESPACE
+(
+cat<<EOF
+kind: ClusterRoleBinding
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: $NAMESPACE
+subjects:
+- kind: ServiceAccount
+  name: default
+  namespace: $NAMESPACE
+roleRef:
+  kind: ClusterRole
+  name: $NAMESPACE
+  apiGroup: rbac.authorization.k8s.io
+
+EOF
+)> ibp-clusterrolebinding.yaml
+
+kubectl apply -f ibp-clusterrolebinding.yaml -n $NAMESPACE
 
 ### Create k8s secret for downloading IBP images
 kubectl create secret docker-registry docker-key-secret --docker-server=$LOCAL_REGISTRY --docker-username=$USER --docker-password=$LOCAL_REGISTRY_PASSWORD --docker-email=$EMAIL -n $NAMESPACE
