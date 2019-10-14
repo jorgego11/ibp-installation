@@ -81,7 +81,8 @@ else
 fi
 
 #https://kubernetes.io/docs/tasks/administer-cluster/namespaces/#deleting-a-namespace
-#kubectl delete namespaces $NAMESPACE
+kubectl delete namespaces $NAMESPACE
+kubectl delete clusterrolebinding $NAMESPACE
 
 #### Start deployment
 log "Starting IBP deployment....\n"
@@ -355,16 +356,14 @@ EOF
 
 kubectl apply -f ibp-operator.yaml -n $NAMESPACE
 
-kubectl get deployment -n $NAMESPACE
-
-kubectl describe pod -n $NAMESPACE
-
-# The operator deployment above is not working...
-exit 0
+#kubectl describe pod -n $NAMESPACE
 
 ### Wait 15 seconds before continuing... the operator should be running on your namespace
 ### before you can apply the IBM Blockchain Platform console object.
+log "Sleeping for 15 seconds..."
 sleep 15
+
+kubectl get deployment -n $NAMESPACE
 
 (
 cat<<EOF  
@@ -430,7 +429,7 @@ spec:
   networkinfo:
     consolePort: 30000
     proxyPort: 30001
-    domain: <proxyIP>
+    domain: c5.dal12.containers.cloud.ibm.com
   storage:
     console:
       class: default
@@ -439,15 +438,16 @@ spec:
 EOF
 ) > ibp-console.yaml
 
-kubectl apply -f ibp-console.yaml -n $NAMESPACE | grep "created"
+kubectl apply -f ibp-console.yaml -n $NAMESPACE
 
 ####
 #### Ok...deployment is complete.  Verifying the installation.
 ####
 
-kubectl get deployment -n $NAMESPACE | grep "operator"
-
-kubectl get deployment -n $NAMESPACE | grep "console"
+kubectl get deployments -n $NAMESPACE
+#kubectl get deployment -n $NAMESPACE | grep "operator"
+#kubectl get deployment -n $NAMESPACE | grep "console"
+kubectl describe ibpconsole -n $NAMESPACE 
 
 echo -e "\nThe installation is now complete!\n"
 echo -e "Note: It will take approximately 10 minutes for the console to be available."
@@ -460,3 +460,4 @@ echo -e "https://$NAMESPACE-ibpconsole-console.$DOMAIN:443"
 echo -e ""
 
 exit
+
