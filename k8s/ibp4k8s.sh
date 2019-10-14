@@ -81,11 +81,11 @@ else
 fi
 
 #https://kubernetes.io/docs/tasks/administer-cluster/namespaces/#deleting-a-namespace
-kubectl delete namespaces $NAMESPACE
-kubectl delete clusterrolebinding $NAMESPACE
+#kubectl delete namespaces $NAMESPACE
+#kubectl delete clusterrolebinding $NAMESPACE
 
 #### Start deployment
-log "Starting IBP deployment....\n"
+log "Starting IBP deployment...."
 
 ### Get pods and storageclasses
 ### IKS free does not have any storageclasses by default?
@@ -358,10 +358,10 @@ kubectl apply -f ibp-operator.yaml -n $NAMESPACE
 
 #kubectl describe pod -n $NAMESPACE
 
-### Wait 15 seconds before continuing... the operator should be running on your namespace
+### Wait 45 seconds before continuing... the operator should be running on your namespace
 ### before you can apply the IBM Blockchain Platform console object.
-log "Sleeping for 15 seconds..."
-sleep 15
+log "Sleeping for 45 seconds..."
+sleep 45
 
 kubectl get deployment -n $NAMESPACE
 
@@ -429,7 +429,7 @@ spec:
   networkinfo:
     consolePort: 30000
     proxyPort: 30001
-    domain: 184.172.214.37
+    domain: mycluster-ibp.us-south.containers.appdomain.cloud
   storage:
     console:
       class: default

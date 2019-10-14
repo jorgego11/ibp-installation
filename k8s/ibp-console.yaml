@@ -60,7 +60,7 @@ spec:
   networkinfo:
     consolePort: 30000
     proxyPort: 30001
-    domain: 184.172.214.37
+    domain: mycluster-ibp.us-south.containers.appdomain.cloud
   storage:
     console:
       class: default
