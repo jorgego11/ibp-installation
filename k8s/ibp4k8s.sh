@@ -102,7 +102,7 @@ cat <<EOF
 apiVersion: extensions/v1beta1
 kind: PodSecurityPolicy
 metadata:
-  name: $NAMESPACE
+  name: ibm-blockchain-platform-psp
 spec:
   hostIPC: false
   hostNetwork: false
