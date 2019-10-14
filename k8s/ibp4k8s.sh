@@ -344,6 +344,8 @@ kubectl apply -f ibp-operator.yaml -n $NAMESPACE
 
 kubectl get deployment -n $NAMESPACE
 
+kubectl describe pod -n $NAMESPACE
+
 # The operator deployment above is not working...
 exit 0
 
