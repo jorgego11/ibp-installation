@@ -328,7 +328,7 @@ spec:
             - name: OPERATOR_NAME
               value: "ibp-operator"
             - name: ISOPENSHIFT
-              value: "true"
+              value: "false"
           resources:
             requests:
               cpu: 100m
