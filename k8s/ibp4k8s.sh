@@ -429,7 +429,7 @@ spec:
   networkinfo:
     consolePort: 30000
     proxyPort: 30001
-    domain: 10.76.68.169
+    domain: 184.172.214.37
   storage:
     console:
       class: default
