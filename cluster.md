@@ -1,4 +1,18 @@
 See: https://cloud.ibm.com/docs/containers?topic=containers-ingress#public_inside_2
+https://cloud.ibm.com/docs/containers?topic=containers-cs_troubleshoot_network
+
+```
+Ricardos-MacBook-Pro-9:k8s olivieri$ ibmcloud ks cluster get --cluster mycluster-ibp | grep Ingress
+Ingress Subdomain:              -   
+Ingress Secret:                 -   
+```
+After several minutes, the ingress domain finally showed up...
+```
+Ricardos-MacBook-Pro-9:k8s olivieri$ ibmcloud ks cluster get --cluster mycluster-ibp | grep Ingress
+Ingress Subdomain:              mycluster-ibp.us-south.containers.appdomain.cloud   
+Ingress Secret:                 mycluster-ibp   
+Ricardos-MacBook-Pro-9:k8s olivieri$ 
+```
 
 ```
 Ricardos-MacBook-Pro-9:ibp-installation olivieri$ ibmcloud ks cluster ls

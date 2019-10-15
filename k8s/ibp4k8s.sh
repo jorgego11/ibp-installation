@@ -96,8 +96,6 @@ log "Starting IBP deployment...."
 ### Get pods and storageclasses
 #kubectl get pods
 #kubectl get storageclasses
-#output=$((kubectl get pods) 2>&1)
-#log $output
 
 ### Create k8s namespace for deployment
 executeCommand "kubectl create namespace $NAMESPACE"
@@ -217,20 +215,20 @@ EOF
 executeCommand "kubectl apply -f ibp-clusterrole.yaml -n $NAMESPACE"
 
 ### Define default service account
-(
-cat<<EOF
-apiVersion: v1
-kind: ServiceAccount
-metadata:
-  name: default
-EOF
+#(
+#cat<<EOF
+#apiVersion: v1
+#kind: ServiceAccount
+#metadata:
+#  name: default
+#EOF
 
-)> ibp-serviceaccount.yaml
+#)> ibp-serviceaccount.yaml
 
-executeCommand "kubectl apply -f ibp-serviceaccount.yaml -n $NAMESPACE"
+#executeCommand "kubectl apply -f ibp-serviceaccount.yaml -n $NAMESPACE"
 
 ### Define role binding
-executeCommand "kubectl -n $NAMESPACE create rolebinding ibp-operator-rolebinding --clusterrole=ibp-operator --group=system:serviceaccounts:$NAMESPACE"
+#executeCommand "kubectl -n $NAMESPACE create rolebinding ibp-operator-rolebinding --clusterrole=ibp-operator --group=system:serviceaccounts:$NAMESPACE"
 
 ### Define cluster role binding
 (
@@ -251,8 +249,7 @@ roleRef:
 EOF
 )> ibp-clusterrolebinding.yaml
 
-output=$((kubectl apply -f ibp-clusterrolebinding.yaml -n $NAMESPACE) 2>&1)
-log $output
+executeCommand "kubectl apply -f ibp-clusterrolebinding.yaml -n $NAMESPACE"
 
 ### Create k8s secret for downloading IBP images
 executeCommand "kubectl create secret docker-registry docker-key-secret --docker-server=$LOCAL_REGISTRY --docker-username=$USER --docker-password=$LOCAL_REGISTRY_PASSWORD --docker-email=$EMAIL -n $NAMESPACE"
@@ -362,12 +359,10 @@ EOF
 
 executeCommand "kubectl apply -f ibp-operator.yaml -n $NAMESPACE"
 
-#kubectl describe pod -n $NAMESPACE
-
-### Wait 15 seconds before continuing... the operator should be running on your namespace
+### Wait 35 seconds before continuing... the operator should be running on your namespace
 ### before you can apply the IBM Blockchain Platform console object.
-log "Sleeping for 15 seconds..."
-sleep 15
+log "Sleeping for 35 seconds... waiting for operator to settle"
+sleep 35
 
 executeCommand "kubectl get deployment -n $NAMESPACE"
 
@@ -459,6 +454,7 @@ log "To launch the IBP Console go to:"
 log "https://$DOMAIN:30000"
 
 #kubectl get deployments -n $NAMESPACE
-#kubectl describe ibpconsole -n $NAMESPACE 
+#kubectl get pods -n $NAMESPACE
+#kubectl describe ibpconsole -n $NAMESPACE
 
 exit
