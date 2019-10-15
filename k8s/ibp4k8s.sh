@@ -41,18 +41,20 @@
 # }
 #
 
-# Exit if any command fails
-set -e
-
 function log {
     echo "[$(date -u)]: $*"
 }
 
+function executeCommand {
+  output=$(($@) 2>&1)
+  log $output
+}
+
 LOCAL_REGISTRY=`jq -r .LOCAL_REGISTRY ibp4k8s.json`
-log "LOCAL_REGISTRY to be used is: $LOCAL_REGISTRY"
+log "LOCAL_REGISTRY is: $LOCAL_REGISTRY"
 
 USER=`jq -r .USER ibp4k8s.json`
-log "USER to run under is: $USER"
+log "USER is: $USER"
 
 EMAIL=`jq -r .EMAIL ibp4k8s.json`
 log "EMAIL to use for the IBP console is: $EMAIL"
@@ -81,10 +83,12 @@ fi
 ### Delete resources from previous installation if they exist
 ### As reference, see https://kubernetes.io/docs/tasks/administer-cluster/namespaces/#deleting-a-namespace
 log "Deleting existing resources from previous runs..."
-output=$((kubectl delete namespaces $NAMESPACE || true) 2>&1)
-log $output
-output=$((kubectl delete clusterrolebinding $NAMESPACE || true) 2>&1)
-log $output
+set +e
+executeCommand "kubectl delete namespaces $NAMESPACE"
+executeCommand "kubectl delete clusterrolebinding $NAMESPACE"
+
+# From now on, exit if any command fails
+set -e
 
 #### Start deployment
 log "Starting IBP deployment...."
@@ -96,8 +100,7 @@ log "Starting IBP deployment...."
 #log $output
 
 ### Create k8s namespace for deployment
-output=$((kubectl create namespace $NAMESPACE) 2>&1)
-log $output
+executeCommand "kubectl create namespace $NAMESPACE"
 
 ### Define pod security policy (psp)
 (
@@ -136,8 +139,7 @@ spec:
 EOF
 )> ibp-psp.yaml
 
-output=$((kubectl apply -f ibp-psp.yaml -n $NAMESPACE) 2>&1)
-log $output
+executeCommand "kubectl apply -f ibp-psp.yaml -n $NAMESPACE"
 
 ### Define cluster role
 (
@@ -212,8 +214,7 @@ rules:
 EOF
 )> ibp-clusterrole.yaml
 
-output=$((kubectl apply -f ibp-clusterrole.yaml -n $NAMESPACE) 2>&1)
-log $output
+executeCommand "kubectl apply -f ibp-clusterrole.yaml -n $NAMESPACE"
 
 ### Define default service account
 (
@@ -226,12 +227,10 @@ EOF
 
 )> ibp-serviceaccount.yaml
 
-output=$((kubectl apply -f ibp-serviceaccount.yaml -n $NAMESPACE) 2>&1)
-log $output
+executeCommand "kubectl apply -f ibp-serviceaccount.yaml -n $NAMESPACE"
 
 ### Define role binding
-output=$((kubectl -n $NAMESPACE create rolebinding ibp-operator-rolebinding --clusterrole=ibp-operator --group=system:serviceaccounts:$NAMESPACE) 2>&1)
-log $output
+executeCommand "kubectl -n $NAMESPACE create rolebinding ibp-operator-rolebinding --clusterrole=ibp-operator --group=system:serviceaccounts:$NAMESPACE"
 
 ### Define cluster role binding
 (
@@ -256,8 +255,7 @@ output=$((kubectl apply -f ibp-clusterrolebinding.yaml -n $NAMESPACE) 2>&1)
 log $output
 
 ### Create k8s secret for downloading IBP images
-output=$((kubectl create secret docker-registry docker-key-secret --docker-server=$LOCAL_REGISTRY --docker-username=$USER --docker-password=$LOCAL_REGISTRY_PASSWORD --docker-email=$EMAIL -n $NAMESPACE) 2>&1)
-log $output
+executeCommand "kubectl create secret docker-registry docker-key-secret --docker-server=$LOCAL_REGISTRY --docker-username=$USER --docker-password=$LOCAL_REGISTRY_PASSWORD --docker-email=$EMAIL -n $NAMESPACE"
 
 ### Define deployment for IBP operator component
 (
@@ -362,17 +360,16 @@ spec:
 EOF
 ) > ibp-operator.yaml
 
-output=$((kubectl apply -f ibp-operator.yaml -n $NAMESPACE) 2>&1)
+executeCommand "kubectl apply -f ibp-operator.yaml -n $NAMESPACE"
 
 #kubectl describe pod -n $NAMESPACE
 
-### Wait 45 seconds before continuing... the operator should be running on your namespace
+### Wait 15 seconds before continuing... the operator should be running on your namespace
 ### before you can apply the IBM Blockchain Platform console object.
-log "Sleeping for 30 seconds..."
-sleep 30
+log "Sleeping for 15 seconds..."
+sleep 15
 
-output=$((kubectl get deployment -n $NAMESPACE) 2>&1)
-log $output
+executeCommand "kubectl get deployment -n $NAMESPACE"
 
 ### Define deployment for IBP console
 (
@@ -448,8 +445,7 @@ spec:
 EOF
 ) > ibp-console.yaml
 
-output=$((kubectl apply -f ibp-console.yaml -n $NAMESPACE) 2>&1)
-log $output
+executeCommand "kubectl apply -f ibp-console.yaml -n $NAMESPACE"
 
 ####
 #### Ok...deployment is complete. Verifying the installation.

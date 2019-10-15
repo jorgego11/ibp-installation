@@ -13,7 +13,7 @@ ibpconsole-54d8647f99-g2g95    4/4     Running   0          10m
 ```
 
 ```
-$ $ kubectl describe deployment ibpconsole -n $NAMESPACE
+$ kubectl describe deployment ibpconsole -n $NAMESPACE
 Name:               ibpconsole
 Namespace:          ibp-installation-test
 CreationTimestamp:  Mon, 14 Oct 2019 15:03:26 -0400
