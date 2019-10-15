@@ -1,8 +1,7 @@
 #!/bin/bash
 
 #
-# To run the script you need to modify the: ibp4k8s.json 
-# file located in this same directory.
+# To run the script you need to modify the: ibp4k8s.json file located in this same directory.
 #
 #  A sample is shown below.  Some of the json data is filled in and some you must obtain.
 #   
@@ -20,28 +19,27 @@
 #    This is obtained by making a request in https://github.ibm.com/IBM-Blockchain/ibp-requests/blob/master/ibp-on-openshift/README.md. 
 #
 #  NAMESPACE:
-#    The name of your kubernetes namespace.
+#    The name of your Kubernetes namespace.
 #
 #  PASSWORD:
 #    The password you will use to login to your IBP Console.  You will have to immediately change this
 #    upon your first login. 
 #
 #  DOMAIN:
-#    The name of your cluster domain.
-#
+#    Your cluster domain. On IKS (IBM Cloud), this is your ingress subdomain, which you can obtain by running 
+#    ibmcloud ks cluster get --cluster <cluster name> | grep -i ingress
 #
 # Sample ibp4k8s.json
 # {
-#"LOCAL_REGISTRY" : "ip-ibp-images-team-docker-remote.artifactory.swg-devops.com/cp",
-#"USER" : "<USER>",
-#"EMAIL" : "<EMAIL>",
-#"LOCAL_REGISTRY_PASSWORD": "<LOCAL_REGISTRY_PASSWORD>",
-#"NAMESPACE": "<NAMESPACE>",
-#"PASSWORD": "<PASSWORD>",
-#"DOMAIN": "<DOMAIN>"
+#   "LOCAL_REGISTRY" : "ip-ibp-images-team-docker-remote.artifactory.swg-devops.com/cp",
+#   "USER" : "<USER>",
+#   "EMAIL" : "<EMAIL>",
+#   "LOCAL_REGISTRY_PASSWORD": "<LOCAL_REGISTRY_PASSWORD>",
+#   "NAMESPACE": "<NAMESPACE>",
+#   "PASSWORD": "<PASSWORD>",
+#   "DOMAIN": "<DOMAIN>"
 # }
-
-#### SET PARMS
+#
 
 # Exit if any command fails
 set -e
@@ -69,12 +67,12 @@ PASSWORD=`jq -r .PASSWORD ibp4k8s.json`
 log "IBP Console Password is: $PASSWORD"
 
 DOMAIN=`jq -r .DOMAIN ibp4k8s.json`
-log "Domain being used: $DOMAIN"
+log "Domain is: $DOMAIN"
 
 ### Checks
 if [ -z "$KUBECONFIG" ]
 then
-      log "KUBECONFIG is empty. Exiting script!"
+      log "KUBECONFIG is not set. Exiting script!"
       exit 1
 else
       log "KUBECONFIG is set to: $KUBECONFIG"
@@ -134,7 +132,6 @@ spec:
 EOF
 )> ibp-psp.yaml
 
-#kubectl apply -f ibp-psp.yaml -n $NAMESPACE | grep "created"
 kubectl apply -f ibp-psp.yaml -n $NAMESPACE
 
 ### Define cluster role
@@ -210,9 +207,9 @@ rules:
 EOF
 )> ibp-clusterrole.yaml
 
-kubectl apply -f ibp-clusterrole.yaml -n $NAMESPACE #| grep "created"
+kubectl apply -f ibp-clusterrole.yaml -n $NAMESPACE
 
-# Define service account
+### Define default service account
 (
 cat<<EOF
 apiVersion: v1
@@ -252,6 +249,7 @@ kubectl apply -f ibp-clusterrolebinding.yaml -n $NAMESPACE
 ### Create k8s secret for downloading IBP images
 kubectl create secret docker-registry docker-key-secret --docker-server=$LOCAL_REGISTRY --docker-username=$USER --docker-password=$LOCAL_REGISTRY_PASSWORD --docker-email=$EMAIL -n $NAMESPACE
 
+### Define deployment for IBP operator component
 (
 cat <<EOF
 apiVersion: apps/v1
@@ -365,6 +363,7 @@ sleep 45
 
 kubectl get deployment -n $NAMESPACE
 
+### Define deployment for IBP console
 (
 cat<<EOF  
 apiVersion: ibp.com/v1alpha1
@@ -429,7 +428,7 @@ spec:
   networkinfo:
     consolePort: 30000
     proxyPort: 30001
-    domain: mycluster-ibp.us-south.containers.appdomain.cloud
+    domain: $DOMAIN
   storage:
     console:
       class: default
@@ -441,23 +440,17 @@ EOF
 kubectl apply -f ibp-console.yaml -n $NAMESPACE
 
 ####
-#### Ok...deployment is complete.  Verifying the installation.
-####
+#### Ok...deployment is complete. Verifying the installation.
+#### URL for IBP console: https://$DOMAIN:<console port> (see console port value assigned above)
+log "The installation is now complete!"
+log "Note: It will take approximately 10 minutes for the IBP console to be available."
+log "You can issue:"
+log "   kubectl get deployments -n $NAMESPACE"
+log "and when both the ibp-operator and ibpconsole are in the 'Available' state, you are ready to roll!"
+log "To launch the IBP Console go to:"
+log "https://$DOMAIN:30000"
 
-kubectl get deployments -n $NAMESPACE
-#kubectl get deployment -n $NAMESPACE | grep "operator"
-#kubectl get deployment -n $NAMESPACE | grep "console"
-kubectl describe ibpconsole -n $NAMESPACE 
-
-echo -e "\nThe installation is now complete!\n"
-echo -e "Note: It will take approximately 10 minutes for the console to be available."
-echo -e "      You can issue:"
-echo -e "      kubectl get deployment -n $NAMESPACE"
-echo -e "      and when both the ibp-operator and ibpconsole are in the 'Available' state, you are ready to roll!"
-echo -e ""
-echo  "To launch the IBP Console go to:"
-echo -e "https://$NAMESPACE-ibpconsole-console.$DOMAIN:443"
-echo -e ""
+#kubectl get deployments -n $NAMESPACE
+#kubectl describe ibpconsole -n $NAMESPACE 
 
 exit
-
