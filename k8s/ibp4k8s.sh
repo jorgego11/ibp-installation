@@ -78,22 +78,26 @@ else
       log "KUBECONFIG is set to: $KUBECONFIG"
 fi
 
-#https://kubernetes.io/docs/tasks/administer-cluster/namespaces/#deleting-a-namespace
-#kubectl delete namespaces $NAMESPACE
-#kubectl delete clusterrolebinding $NAMESPACE
+### Delete resources from previous installation if they exist
+### As reference, see https://kubernetes.io/docs/tasks/administer-cluster/namespaces/#deleting-a-namespace
+log "Deleting existing resources from previous runs..."
+output=$((kubectl delete namespaces $NAMESPACE || true) 2>&1)
+log $output
+output=$((kubectl delete clusterrolebinding $NAMESPACE || true) 2>&1)
+log $output
 
 #### Start deployment
 log "Starting IBP deployment...."
 
 ### Get pods and storageclasses
-### IKS free does not have any storageclasses by default?
-kubectl get pods
-kubectl get storageclasses
+#kubectl get pods
+#kubectl get storageclasses
 #output=$((kubectl get pods) 2>&1)
 #log $output
 
 ### Create k8s namespace for deployment
-kubectl create namespace $NAMESPACE
+output=$((kubectl create namespace $NAMESPACE) 2>&1)
+log $output
 
 ### Define pod security policy (psp)
 (
@@ -132,7 +136,8 @@ spec:
 EOF
 )> ibp-psp.yaml
 
-kubectl apply -f ibp-psp.yaml -n $NAMESPACE
+output=$((kubectl apply -f ibp-psp.yaml -n $NAMESPACE) 2>&1)
+log $output
 
 ### Define cluster role
 (
@@ -207,7 +212,8 @@ rules:
 EOF
 )> ibp-clusterrole.yaml
 
-kubectl apply -f ibp-clusterrole.yaml -n $NAMESPACE
+output=$((kubectl apply -f ibp-clusterrole.yaml -n $NAMESPACE) 2>&1)
+log $output
 
 ### Define default service account
 (
@@ -220,10 +226,12 @@ EOF
 
 )> ibp-serviceaccount.yaml
 
-kubectl apply -f ibp-serviceaccount.yaml -n $NAMESPACE 
+output=$((kubectl apply -f ibp-serviceaccount.yaml -n $NAMESPACE) 2>&1)
+log $output
 
 ### Define role binding
-kubectl -n $NAMESPACE create rolebinding ibp-operator-rolebinding --clusterrole=ibp-operator --group=system:serviceaccounts:$NAMESPACE
+output=$((kubectl -n $NAMESPACE create rolebinding ibp-operator-rolebinding --clusterrole=ibp-operator --group=system:serviceaccounts:$NAMESPACE) 2>&1)
+log $output
 
 ### Define cluster role binding
 (
@@ -244,10 +252,12 @@ roleRef:
 EOF
 )> ibp-clusterrolebinding.yaml
 
-kubectl apply -f ibp-clusterrolebinding.yaml -n $NAMESPACE
+output=$((kubectl apply -f ibp-clusterrolebinding.yaml -n $NAMESPACE) 2>&1)
+log $output
 
 ### Create k8s secret for downloading IBP images
-kubectl create secret docker-registry docker-key-secret --docker-server=$LOCAL_REGISTRY --docker-username=$USER --docker-password=$LOCAL_REGISTRY_PASSWORD --docker-email=$EMAIL -n $NAMESPACE
+output=$((kubectl create secret docker-registry docker-key-secret --docker-server=$LOCAL_REGISTRY --docker-username=$USER --docker-password=$LOCAL_REGISTRY_PASSWORD --docker-email=$EMAIL -n $NAMESPACE) 2>&1)
+log $output
 
 ### Define deployment for IBP operator component
 (
@@ -352,16 +362,17 @@ spec:
 EOF
 ) > ibp-operator.yaml
 
-kubectl apply -f ibp-operator.yaml -n $NAMESPACE
+output=$((kubectl apply -f ibp-operator.yaml -n $NAMESPACE) 2>&1)
 
 #kubectl describe pod -n $NAMESPACE
 
 ### Wait 45 seconds before continuing... the operator should be running on your namespace
 ### before you can apply the IBM Blockchain Platform console object.
-log "Sleeping for 45 seconds..."
-sleep 45
+log "Sleeping for 30 seconds..."
+sleep 30
 
-kubectl get deployment -n $NAMESPACE
+output=$((kubectl get deployment -n $NAMESPACE) 2>&1)
+log $output
 
 ### Define deployment for IBP console
 (
@@ -437,7 +448,8 @@ spec:
 EOF
 ) > ibp-console.yaml
 
-kubectl apply -f ibp-console.yaml -n $NAMESPACE
+output=$((kubectl apply -f ibp-console.yaml -n $NAMESPACE) 2>&1)
+log $output
 
 ####
 #### Ok...deployment is complete. Verifying the installation.
