@@ -80,4 +80,4 @@ The following are the steps I took for getting familiar with Rancher and install
 
 
 ## Observations
-* If nothing changes, we should be able to make a few minor enhancements to the installation script so we can use the same script for installing IBP on IKS and also on a Rancher environment. 
+* If nothing changes, I can make a few minor enhancements to the installation script so we can use the same script for installing IBP on IKS and also on a Rancher environment. 
