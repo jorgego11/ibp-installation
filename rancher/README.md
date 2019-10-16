@@ -48,7 +48,7 @@ The following are the steps I took for getting familiar with Rancher and install
 4) Installed Rancher using the manual install option; see [Manual Quick Start](https://rancher.com/docs/rancher/v2.x/en/quick-start-guide/deployment/quickstart-manual-setup/). I used the stable image instead of latest to avoid any surprises:
 
     ```
-    $ sudo docker run -d --restart=unless-stopped -p 80:80 -p 443:443 rancher/rancher:stable
+    $ sudo docker run -d --restart=unless-stopped -p 8080:80 -p 8443:443 rancher/rancher:stable
     ```
 
 5) Once rancher was installed, created Kubernetes cluster using Rancher's UI. See [here](https://rancher.com/docs/rancher/v2.x/en/quick-start-guide/deployment/quickstart-manual-setup/#3-log-in) for instructions.
@@ -87,4 +87,4 @@ The following are the steps I took for getting familiar with Rancher and install
 
 ## Observations
 * If nothing changes, I can make a few minor enhancements to the installation script so we can use the same script for installing IBP on IKS and also on a Rancher environment.
-* Following the ingress instructions on the following link not quite working for their hello-world example: https://rancher.com/docs/rancher/v2.x/en/quick-start-guide/workload/.
+* Following the ingress instructions on the following link not quite working for their hello-world example: https://rancher.com/docs/rancher/v2.x/en/quick-start-guide/workload/. Oops... probably this is the issue -> https://github.com/rancher/rancher/issues/13351
