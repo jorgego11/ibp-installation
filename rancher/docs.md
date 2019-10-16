@@ -47,33 +47,37 @@ The following are the steps I took for getting familiar with Rancher and install
 
 4) Installed Rancher using the manual install option; see [Manual Quick Start](https://rancher.com/docs/rancher/v2.x/en/quick-start-guide/deployment/quickstart-manual-setup/). I used the stable image instead of latest to avoid any surprises:
 
-```
-$ sudo docker run -d --restart=unless-stopped -p 80:80 -p 443:443 rancher/rancher:stable
-```
+    ```
+    $ sudo docker run -d --restart=unless-stopped -p 80:80 -p 443:443 rancher/rancher:stable
+    ```
 
 5) Once rancher was installed, created Kubernetes cluster using Rancher's UI. See [here](https://rancher.com/docs/rancher/v2.x/en/quick-start-guide/deployment/quickstart-manual-setup/#3-log-in) for instructions.
 
 6) Once Kubernetes cluster was up and running, you can check that by default there are not any storage classes available:
 
-```
-$ kubectl get storageclasses
-```
+    ```
+    $ kubectl get storageclasses
+    ```
 
 Therefore, added the [Local Path Provisioner](https://github.com/rancher/local-path-provisioner) as a storage class to the cluster:
 
-```
-kubectl apply -f https://raw.githubusercontent.com/rancher/local-path-provisioner/master/deploy/local-path-storage.yaml
-```
+    ```
+    $ kubectl apply -f https://raw.githubusercontent.com/rancher/local-path-provisioner/master/deploy/local-path-storage.yaml
+    ```
 
 7) Verified that the new storage class was available to the cluster
 
-```
-$ kubectl get storageclasses
-kubectl get storageclasses
-NAME         PROVISIONER             AGE
-local-path   rancher.io/local-path   52m
-```
+    ```
+    $ kubectl get storageclasses
+    kubectl get storageclasses
+    NAME         PROVISIONER             AGE
+    local-path   rancher.io/local-path   52m
+    ```
 
-8) Finally, proceeded to install IBP using the script:
+8) Finally, proceeded to install IBP using the installation script in this folder:
     * Updated storage class to `local-path` (instead of `default`).
-    * Used the IP address assigned to the worker node as the domain (proxy IP) value. - THIS IS NOT THE RIGHT WAY THOUGH!
+    * Used the IP address assigned to the worker node as the domain (proxy IP) value. - THIS IS NOT THE RIGHT WAY THOUGH! - NEED TO REVIEW THIS
+
+
+## Observations
+* If nothing changes, we should be able to make a few minor enhancements to the installation script so we can use the same script for installing IBP on IKS and also on a Rancher environment. 
