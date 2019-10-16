@@ -84,6 +84,7 @@ The following are the steps I took for getting familiar with Rancher and install
     ibp-operator   1/1     1            1           56m
     ibpconsole     1/1     1            1           56m
     ```
-    
+
 ## Observations
-* If nothing changes, I can make a few minor enhancements to the installation script so we can use the same script for installing IBP on IKS and also on a Rancher environment. 
+* If nothing changes, I can make a few minor enhancements to the installation script so we can use the same script for installing IBP on IKS and also on a Rancher environment.
+* Following the ingress instructions on the following link not quite working for their hello-world example: https://rancher.com/docs/rancher/v2.x/en/quick-start-guide/workload/.
