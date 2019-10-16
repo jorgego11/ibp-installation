@@ -65,12 +65,15 @@ Therefore, added the [Local Path Provisioner](https://github.com/rancher/local-p
 kubectl apply -f https://raw.githubusercontent.com/rancher/local-path-provisioner/master/deploy/local-path-storage.yaml
 ```
 
-7) Verified storage class was available to the cluster
+7) Verified that the new storage class was available to the cluster
 
 ```
 $ kubectl get storageclasses
+kubectl get storageclasses
+NAME         PROVISIONER             AGE
+local-path   rancher.io/local-path   52m
 ```
 
 8) Finally, proceeded to install IBP using the script:
-    * Updated storage class to ``
-    * Used the IP address for the worker node as the domain (proxy IP) value. - THIS IS NOT THE RIGHT WAY THOUGH!
+    * Updated storage class to `local-path` (instead of `default`).
+    * Used the IP address assigned to the worker node as the domain (proxy IP) value. - THIS IS NOT THE RIGHT WAY THOUGH!

@@ -434,7 +434,7 @@ spec:
     domain: $DOMAIN
   storage:
     console:
-      class: default
+      class: local-path
       size: 10Gi
 
 EOF
