@@ -1,0 +1,9 @@
+{
+    "LOCAL_REGISTRY": "ip-ibp-images-team-docker-remote.artifactory.swg-devops.com",
+    "USER": "ricardo.olivieri@us.ibm.com",
+    "EMAIL": "ricardo.olivieri@us.ibm.com",
+    "LOCAL_REGISTRY_PASSWORD": "",
+    "NAMESPACE": "ibp-installation-tst",
+    "PASSWORD": "passwd",
+    "DOMAIN": "mycluster-ibp.us-south.containers.appdomain.cloud"
+}

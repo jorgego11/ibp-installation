@@ -1,0 +1,9 @@
+{
+"LOCAL_REGISTRY" : "ip-ibp-images-team-docker-remote.artifactory.swg-devops.com/cp",
+"USER" : "<USER>",
+"EMAIL" : "<EMAIL>",
+"LOCAL_REGISTRY_PASSWORD": "<LOCAL_REGISTRY_PASSWORD>",
+"NAMESPACE": "<NAMESPACE>",
+"PASSWORD": "<PASSWORD>",
+"DOMAIN": "<DOMAIN>"
+}
