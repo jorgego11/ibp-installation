@@ -59,7 +59,7 @@ The following are the steps I took for getting familiar with Rancher and install
     $ kubectl get storageclasses
     ```
 
-Therefore, added the [Local Path Provisioner](https://github.com/rancher/local-path-provisioner) as a storage class to the cluster:
+    Therefore, added the [Local Path Provisioner](https://github.com/rancher/local-path-provisioner) as a storage class to the cluster:
 
     ```
     $ kubectl apply -f https://raw.githubusercontent.com/rancher/local-path-provisioner/master/deploy/local-path-storage.yaml
