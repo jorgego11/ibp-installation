@@ -53,7 +53,7 @@ The following are the steps I took for getting familiar with Rancher and install
 
 5) Once rancher was installed, I created a **custom** Kubernetes cluster using Rancher's UI. See [here](https://rancher.com/docs/rancher/v2.x/en/quick-start-guide/deployment/quickstart-manual-setup/#3-log-in) for instructions.
 
-6) Downloaded from the Rancher UI the Kubernetes config file and [for the cluster] and saved it (`~/.kube/config`).
+6) Downloaded from the Rancher UI the Kubernetes config file and [for the cluster] and saved it (`~/.kube/config`) and set the `KUBECONFIG` environment variable to point to this file.
 
 7) Once Kubernetes cluster was up and running, you can check that by default there are not any storage classes available:
 
@@ -68,7 +68,7 @@ The following are the steps I took for getting familiar with Rancher and install
     $ kubectl apply -f https://raw.githubusercontent.com/rancher/local-path-provisioner/master/deploy/local-path-storage.yaml
     ```
 
-8) Verified that the new storage class was available to the cluster
+8) Verified that the new storage class was available to the cluster:
 
     ```
     $ kubectl get storageclasses
