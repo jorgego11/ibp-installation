@@ -51,12 +51,15 @@ The following are the steps I took for getting familiar with Rancher and install
     $ sudo docker run -d --restart=unless-stopped -p 8080:80 -p 8443:443 rancher/rancher:stable
     ```
 
-5) Once rancher was installed, created Kubernetes cluster using Rancher's UI. See [here](https://rancher.com/docs/rancher/v2.x/en/quick-start-guide/deployment/quickstart-manual-setup/#3-log-in) for instructions.
+5) Once rancher was installed, I created a **custom** Kubernetes cluster using Rancher's UI. See [here](https://rancher.com/docs/rancher/v2.x/en/quick-start-guide/deployment/quickstart-manual-setup/#3-log-in) for instructions.
 
-6) Once Kubernetes cluster was up and running, you can check that by default there are not any storage classes available:
+6) Downloaded from the Rancher UI the Kubernetes config file and [for the cluster] and saved it (`~/.kube/config`).
+
+7) Once Kubernetes cluster was up and running, you can check that by default there are not any storage classes available:
 
     ```
     $ kubectl get storageclasses
+    No resources found in default namespace.
     ```
 
     Therefore, added the [Local Path Provisioner](https://github.com/rancher/local-path-provisioner) as a storage class to the cluster:
@@ -65,16 +68,16 @@ The following are the steps I took for getting familiar with Rancher and install
     $ kubectl apply -f https://raw.githubusercontent.com/rancher/local-path-provisioner/master/deploy/local-path-storage.yaml
     ```
 
-7) Verified that the new storage class was available to the cluster
+8) Verified that the new storage class was available to the cluster
 
     ```
     $ kubectl get storageclasses
     kubectl get storageclasses
     NAME         PROVISIONER             AGE
-    local-path   rancher.io/local-path   52m
+    local-path   rancher.io/local-path   4s
     ```
 
-8) Finally, proceeded to install IBP using the installation script in this folder:
+9) Finally, proceeded to install IBP using the installation script in this folder:
     * Updated storage class to `local-path` (instead of `default`).
     * Used the IP address assigned to the worker node as the domain (proxy IP) value. - THIS IS NOT THE RIGHT WAY THOUGH! - NEED TO REVIEW THIS
 
@@ -84,6 +87,9 @@ The following are the steps I took for getting familiar with Rancher and install
     ibp-operator   1/1     1            1           56m
     ibpconsole     1/1     1            1           56m
     ```
+
+## Tips
+* If running into issues while creating a new cluster after restarting Rancher, follow the steps outline [here](https://github.com/rancher/rancher/issues/19882#issuecomment-501056386).
 
 ## Observations
 * If nothing changes, I can make a few minor enhancements to the installation script so we can use the same script for installing IBP on IKS and also on a Rancher environment.
