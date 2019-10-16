@@ -78,6 +78,15 @@ The following are the steps I took for getting familiar with Rancher and install
     * Updated storage class to `local-path` (instead of `default`).
     * Used the IP address assigned to the worker node as the domain (proxy IP) value. - THIS IS NOT THE RIGHT WAY THOUGH! - NEED TO REVIEW THIS
 
+```
+$ kubectl get deployments -n ibp-installation-tst
+NAME           READY   UP-TO-DATE   AVAILABLE   AGE
+caorg1         1/1     1            1           10m
+caorg2         1/1     1            1           10m
+ibp-operator   1/1     1            1           56m
+ibpconsole     1/1     1            1           56m
+ibm@kubeslave:~/workspace/ibp/ibp-installation$ 
+```
 
 ## Observations
 * If nothing changes, I can make a few minor enhancements to the installation script so we can use the same script for installing IBP on IKS and also on a Rancher environment. 
