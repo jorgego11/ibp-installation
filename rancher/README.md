@@ -16,7 +16,7 @@ The following are the steps I took for getting familiar with Rancher and install
 
     ```
 
-Please note that instead of using a bare-metal machine, you can provision a VM on the IBM Cloud that meets the software and hardware [requirements](https://rancher.com/docs/rancher/v2.x/en/installation/requirements/) for Rancher (I just chose the bare-metal approach since I had a spare Linux laptop and wanted to save our organization a few bucks by not provisioning a VM on the cloud).
+Please note that instead of using a bare-metal machine, you can provision a VM on the IBM Cloud that meets the software and hardware [requirements](https://rancher.com/docs/rancher/v2.x/en/installation/requirements/) for Rancher (to save our organization a few bucks, I used a spare Linux laptop for the installation instead of provisioning a VM on the cloud).
 
 2) Installed Docker on the Ubuntu system:
 
