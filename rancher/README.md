@@ -100,4 +100,6 @@ Please note that instead of using a bare-metal machine, you can provision a VM o
 * Following the Ingress example instructions did not quite work for their hello-world example: https://rancher.com/docs/rancher/v2.x/en/quick-start-guide/workload/. Issues related to this problem:
     * https://github.com/rancher/rancher/issues/13351 
     * https://github.com/rancher/rancher/issues/14960
-* Ingress and Rancher - https://rancher.com/docs/rancher/v2.x/en/k8s-in-rancher/load-balancers-and-ingress/ingress/
+* Ingress and Rancher - According to the Rancher docs, a Rancher cluster should have an NIGIX Ingress controller by default; see following links for more details:
+    * https://rancher.com/docs/rancher/v2.x/en/k8s-in-rancher/load-balancers-and-ingress/
+    * https://rancher.com/docs/rancher/v2.x/en/k8s-in-rancher/load-balancers-and-ingress/ingress/
