@@ -93,4 +93,6 @@ The following are the steps I took for getting familiar with Rancher and install
 
 ## Observations
 * If nothing changes, I can make a few minor enhancements to the installation script so we can use the same script for installing IBP on IKS and also on a Rancher environment.
-* Following the ingress instructions on the following link not quite working for their hello-world example: https://rancher.com/docs/rancher/v2.x/en/quick-start-guide/workload/. Oops... probably this is the issue -> https://github.com/rancher/rancher/issues/13351
+* Following the ingress instructions on the following link not quite working for their hello-world example: https://rancher.com/docs/rancher/v2.x/en/quick-start-guide/workload/. Issues related to this problem:
+    * https://github.com/rancher/rancher/issues/13351 
+    * https://github.com/rancher/rancher/issues/14960
