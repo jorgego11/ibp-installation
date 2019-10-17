@@ -42,20 +42,20 @@ Please note that instead of using a bare-metal machine, you can provision a VM o
     Experimental:     false
     ```
 
-3) Updated Ubuntu system to ensure it meets networking requirements. Specifically, had to define DHCP reservation policy to ensure the same IP address is assigned by my router to the single worker/master node (not doing this caused problems the first time I tried to install Rancher). For further details, see:
+3) Updated networking settings. Specifically, I had to define a DHCP reservation policy to ensure the same IP address is assigned by my home router to the single worker/master node (not doing this caused problems the first time I tried to install Rancher). For further details, see:
 
     * [Node requirements](https://rancher.com/docs/rancher/v2.x/en/installation/requirements/)
     * [How do I reserve an IP address on my NETGEAR router?](https://kb.netgear.com/25722/How-do-I-reserve-an-IP-address-on-my-NETGEAR-router)
 
-4) Installed Rancher using the manual install option; see [Manual Quick Start](https://rancher.com/docs/rancher/v2.x/en/quick-start-guide/deployment/quickstart-manual-setup/). I used the stable image instead of latest to avoid any surprises:
+4) Installed Rancher using the manual install option (see [Manual Quick Start](https://rancher.com/docs/rancher/v2.x/en/quick-start-guide/deployment/quickstart-manual-setup/)). I used the stable image instead of latest to avoid any surprises:
 
     ```
     $ sudo docker run -d --restart=unless-stopped -p 8080:80 -p 8443:443 rancher/rancher:stable
     ```
 
-5) Once rancher was installed, I created a **custom** Kubernetes cluster using Rancher's UI. See [here](https://rancher.com/docs/rancher/v2.x/en/quick-start-guide/deployment/quickstart-manual-setup/#3-log-in) for instructions.
+5) Once rancher was installed, I created a **custom** Kubernetes cluster using Rancher's UI (see [here](https://rancher.com/docs/rancher/v2.x/en/quick-start-guide/deployment/quickstart-manual-setup/#3-log-in) for instructions).
 
-6) Downloaded from the Rancher UI the Kubernetes config file and [for the cluster] and saved it (`~/.kube/config`) and set the `KUBECONFIG` environment variable to point to this file.
+6) Downloaded from the Rancher UI the Kubernetes config file and [for the cluster], saved it (`~/.kube/config`), and set the `KUBECONFIG` environment variable to point to this file.
 
 7) Once Kubernetes cluster was up and running, you can check that by default there are not any storage classes available:
 
@@ -64,7 +64,7 @@ Please note that instead of using a bare-metal machine, you can provision a VM o
     No resources found in default namespace.
     ```
 
-    Therefore, added the [Local Path Provisioner](https://github.com/rancher/local-path-provisioner) as a storage class to the cluster:
+    Therefore, I added the [Local Path Provisioner](https://github.com/rancher/local-path-provisioner) as a storage class to the K8s cluster:
 
     ```
     $ kubectl apply -f https://raw.githubusercontent.com/rancher/local-path-provisioner/master/deploy/local-path-storage.yaml
@@ -79,7 +79,7 @@ Please note that instead of using a bare-metal machine, you can provision a VM o
     local-path   rancher.io/local-path   4s
     ```
 
-9) Finally, proceeded to install IBP using the installation script in this folder:
+9) Finally, proceeded to install IBP using the installation [script](ibp4k8s.sh) in this folder:
     * Updated storage class to `local-path` (instead of `default`).
     * Used the IP address assigned to the worker node as the domain (proxy IP) value (in theory, we should instead use an IP address/domain that routes to, say, an ingress controller).
 
@@ -93,7 +93,7 @@ Please note that instead of using a bare-metal machine, you can provision a VM o
 10) After both deployments (i.e. ibp-operator and ibpconsole) were up and running on the cluster, I was able to access the IBP Console and successfully created several blockchain artifacts (e.g. peers, MSPs, CAs, etc.).
 
 ## Tips
-* If you run into issues while re-creating a cluster on Rancher, follow the steps outlined [here](https://github.com/rancher/rancher/issues/19882#issuecomment-501056386).
+* If you run into an error similar to "`[etcd] Failed to bring up Etcd Plane: [etcd] Etcd Cluster is not healthy`" while re-creating a cluster on Rancher, follow the steps outlined [here](https://github.com/rancher/rancher/issues/19882#issuecomment-501056386) to clean up your environment.
 
 ## Observations
 * If nothing changes, I can make a few minor enhancements to the installation script so we can use the same script for installing IBP on IKS and also on a Rancher environment.
