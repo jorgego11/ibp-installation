@@ -1,5 +1,5 @@
 # Installing IBP on Rancher
-The following are the steps I took for getting familiar with Rancher and installing IBP on Kubernetes cluster that was provisioned using Rancher:
+The following are the steps I took for getting familiar with Rancher and installing IBP on it:
 
 1) A bare-metal system running Ubuntu 18.04.3: 
 
@@ -15,6 +15,8 @@ The following are the steps I took for getting familiar with Rancher and install
         Architecture: x86-64
 
     ```
+
+Please note that instead of using a bare-metal machine, you can provision a VM on the IBM Cloud that meets the software and hardware [requirements](https://rancher.com/docs/rancher/v2.x/en/installation/requirements/) for Rancher (I just chose the bare-metal approach since I had a spare Linux laptop and wanted to save our organization a few bucks by not provisioning a VM on the cloud).
 
 2) Installed Docker on the Ubuntu system:
 
@@ -79,7 +81,7 @@ The following are the steps I took for getting familiar with Rancher and install
 
 9) Finally, proceeded to install IBP using the installation script in this folder:
     * Updated storage class to `local-path` (instead of `default`).
-    * Used the IP address assigned to the worker node as the domain (proxy IP) value. - THIS IS NOT THE RIGHT WAY THOUGH! - NEED TO REVIEW THIS
+    * Used the IP address assigned to the worker node as the domain (proxy IP) value (in theory, we should instead use an IP address/domain that routes to, say, an ingress controller).
 
     ```
     $ kubectl get deployments -n ibp-installation-tst
@@ -88,11 +90,14 @@ The following are the steps I took for getting familiar with Rancher and install
     ibpconsole     1/1     1            1           56m
     ```
 
+10) After both deployments (i.e. ibp-operator and ibpconsole) were up and running on the cluster, I was able to access the IBP Console and successfully created several blockchain artifacts (e.g. peers, MSPs, CAs, etc.).
+
 ## Tips
-* If running into issues while creating a new cluster after restarting Rancher, follow the steps outline [here](https://github.com/rancher/rancher/issues/19882#issuecomment-501056386).
+* If you run into issues while re-creating a cluster on Rancher, follow the steps outlined [here](https://github.com/rancher/rancher/issues/19882#issuecomment-501056386).
 
 ## Observations
 * If nothing changes, I can make a few minor enhancements to the installation script so we can use the same script for installing IBP on IKS and also on a Rancher environment.
-* Following the ingress instructions on the following link not quite working for their hello-world example: https://rancher.com/docs/rancher/v2.x/en/quick-start-guide/workload/. Issues related to this problem:
+* Following the Ingress example instructions did not quite work for their hello-world example: https://rancher.com/docs/rancher/v2.x/en/quick-start-guide/workload/. Issues related to this problem:
     * https://github.com/rancher/rancher/issues/13351 
     * https://github.com/rancher/rancher/issues/14960
+* Ingress and Rancher - https://rancher.com/docs/rancher/v2.x/en/k8s-in-rancher/load-balancers-and-ingress/ingress/
