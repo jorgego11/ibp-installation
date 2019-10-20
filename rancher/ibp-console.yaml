@@ -60,7 +60,7 @@ spec:
   networkinfo:
     consolePort: 30000
     proxyPort: 30001
-    domain: 192.168.1.13
+    domain: rancher-load-balancer.rtp.raleigh.ibm.com
   storage:
     console:
       class: local-path
