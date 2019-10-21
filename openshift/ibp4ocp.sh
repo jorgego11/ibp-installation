@@ -1,5 +1,5 @@
 #!/bin/bash
-
+#
 #
 # To run the script you need to modify the: ibp4ocp.json 
 # file located in this same directory.
