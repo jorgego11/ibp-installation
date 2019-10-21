@@ -4,40 +4,47 @@
 # To run the script you need to modify the: ibp4ocp.json 
 # file located in this same directory.
 #
+# Make sure you have jq installed, and make the script executable after download
+#
 #  A sample is shown below.  Some of the json data is filled in and some you must obtain.
-#   
-#  For the fields you need to obtain the value, here is where you get the information. 
-#  LOGIN: 
+#
+#  For the fields you need to obtain the value, here is where you get the information.
+#  LOGIN:
 #    Open the OpenShift web console. In the upper right corner of the cluster overview page, click OpenShift web console.
-#    From the web console, click the dropdown menu in the upper right corner and then click Copy Login Command. Paste the copied command in your terminal window.
+#    From the web console, click the dropdown menu in the upper right corner and then click Copy Login Command. Paste the copied com$
 #    The command looks similar to the following example:
-#    oc login cxxx-e.us-south.containers.cloud.ibm.com:31974 --token=xxxxxxx
+#    oc login https://cxxx-e.us-south.containers.cloud.ibm.com:31974 --token=xxxxxxx
 #    ibp4ocp.json requires this the LOGIN key have a value of xxx-e.us-south.containers.cloud.ibm.com:31974 --token=xxxxxxx
-#     
+#
+#  LOCAL_REGISTRY:
+#    This is where you will pick up the images. Should not change if you are using IBM repo
+#
 #  USER:
-#    THE user is the user name associated with your docker username.
+#    The user is the user name associated with your docker username. example frank@us.ibm.com
 #
 #  EMAIL:
 #    The email is used for two purposes.
-#    The email that is used for the IBP Console login and used to obtain your local registry password. 
+#    The email that is used for the IBP Console login and used to obtain your local registry password(jFrog). example frank@us.ibm.c$
 #
 #  LOCAL_REGISTRY_PASSWORD:
-#    The password to your local registry.  
-#    This is obtained by making a request in https://github.ibm.com/IBM-Blockchain/ibp-requests/blob/master/ibp-on-openshift/README.md. 
+#    The password to your local registry.
+#    This is obtained by making a request in https://github.ibm.com/IBM-Blockchain/ibp-requests/blob/master/ibp-on-openshift/README.$
 #
 #  PROJECT_NAME:
 #    The name of your kubernetes project/namespace.
+#    Will create a new project/namespace if it doesn't alredy exist
 #
 #  PASSWORD:
 #    The password you will use to login to your IBP Console.  You will have to immediately change this
-#    upon your first login. 
+#    upon your first login.
 #
 #  DOMAIN:
-#    the name of your cluster domain. You can find this value by using the OpenShift web console. 
-#    Use the dropdown menu next to OpenShift Container Platform at the top of the page to switch from 
-#    Service Catalog to Cluster Console. Examine the url for that page. It will be similar to 
-#    console.xyz.abc.com/k8s/cluster/projects. The value of the domain then would be xyz.abc.com, after 
+#    The name of your cluster domain. You can find this value by using the OpenShift web console.
+#    Use the dropdown menu next to OpenShift Container Platform at the top of the page to switch from
+#    Service Catalog to Cluster Console. Examine the url for that page. It will be similar to
+#    console.xyz.abc.com/k8s/cluster/projects. The value of the domain then would be xyz.abc.com, after
 #    removing console and /k8s/cluster/projects.
+#    example: mycluster-302747-1abd866a65a6a73350903823fc77cd5f-0001.us-south.containers.appdomain.cloud
 #
 #
 # Sample ibp4ocp.json
@@ -51,6 +58,13 @@
 #"PASSWORD": "<PASSWORD>",
 #"DOMAIN": "<DOMAIN>"
 # }
+
+#  *** Critical ***
+#  You must accept the self-signed cert from the proxy or your console will not be able to communicate with the backend.
+#  Sample: 
+#  https://multicloud-ibpconsole-proxy.console.multicloudocp-26516791b9e928a1347e1fda5a30268c-0001.us-south.containers.appdomain.cloud/
+#
+#  *** End Critical
 
 #### SET PARMS
 
@@ -96,16 +110,23 @@ function checkrc {
 #
 
 echo -e "Starting IBP Deployment....\n"
-oc login https://$LOGIN | grep "Logged"
+$LOGIN | grep "Logged"
 checkrc
 #
-oc get pods | grep "Running"
-checkrc
+oc get pods  
 
-kubectl get pods | grep "Running"
-checkrc
+sleep 1
 
-oc new-project $PROJECT_NAME | grep "$PROJECT_NAME"
+kubectl get pods
+
+sleep 1
+
+oc get namespaces | grep $PROJECT_NAME
+if [ $? == 1 ]; then
+   echo "Creating a new project"
+   oc new-project $PROJECT_NAME | grep "$PROJECT_NAME"
+fi
+#oc new-project $PROJECT_NAME | grep "$PROJECT_NAME"
 checkrc
 
 oc get namespace | grep "$PROJECT_NAME"
