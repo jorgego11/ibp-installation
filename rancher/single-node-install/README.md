@@ -1,4 +1,4 @@
-# Installing IBP on Rancher
+# Installing IBP on Rancher (single node install)
 The following are the steps I took for getting familiar with Rancher and installing IBP on it:
 
 1) A bare-metal system running Ubuntu 18.04.3: 
@@ -81,7 +81,7 @@ Please note that instead of using a bare-metal machine, you can provision a VM o
 
 9) Finally, proceeded to install IBP using the installation [script](ibp4k8s.sh) in this folder:
     * Updated storage class to `local-path` (instead of `default`).
-    * Used the IP address assigned to the worker node as the domain (proxy IP) value (in theory, we should instead use an IP address/domain that routes to, say, an ingress controller).
+    * Used the IP address assigned to the worker node as the domain (proxy IP) value (in theory, we would instead use a proxy IP address/domain).
 
     ```
     $ kubectl get deployments -n ibp-installation-tst
@@ -100,6 +100,6 @@ Please note that instead of using a bare-metal machine, you can provision a VM o
 * Following the Ingress example instructions did not quite work for their hello-world example: https://rancher.com/docs/rancher/v2.x/en/quick-start-guide/workload/. Issues related to this problem:
     * https://github.com/rancher/rancher/issues/13351 
     * https://github.com/rancher/rancher/issues/14960
-* Ingress and Rancher - According to the Rancher docs, a Rancher cluster should have an NIGIX Ingress controller by default; see following links for more details:
+* Ingress and Rancher - According to the Rancher docs, a Rancher cluster should have an nginx ingress controller by default; see following links for more details:
     * https://rancher.com/docs/rancher/v2.x/en/k8s-in-rancher/load-balancers-and-ingress/
     * https://rancher.com/docs/rancher/v2.x/en/k8s-in-rancher/load-balancers-and-ingress/ingress/
