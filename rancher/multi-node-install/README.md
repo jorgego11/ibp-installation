@@ -63,7 +63,7 @@ The following are the steps I took for getting familiar with Rancher and install
     local-path   rancher.io/local-path   4s
     ```
 
-9) Finally, proceeded to install IBP using the installation [script](../ibp4k8s.sh):
+9) Finally, proceeded to install IBP on the cluster using the installation [script](../ibp4k8s.sh):
     * Updated storage class to `local-path` (instead of `default`).
     * Used the IP address/hostname assigned to the load balancer VM as the domain (proxy IP) value.
 
@@ -83,9 +83,12 @@ The following are the steps I took for getting familiar with Rancher and install
 
 10) After updating the load balancer and verifying that both IBP deployments (i.e. `ibp-operator` and `ibpconsole`) were up and running on the cluster, I was able to access the IBP Console (`https://<load balancer IP>:30000`) and successfully created several blockchain artifacts (e.g. peers, MSPs, CAs, etc.).
 
-## Troubleshooting
+## Troubleshooting & tips
 * [waiting for server-url issue](https://github.com/rancher/rancher/issues/16213)
 * [NET::ERR_CERT_INVALID in Chrome](https://support.google.com/chrome/thread/9253301?hl=en)
+* Ideally, the Kubernetes cluster where the Rancher application resides should only host Rancher application. This means that IBP, in theory, should not be installed on the same cluster where Rancher is running. A separate cluster should be created for IBP and any other applications. See following links for further details: 
+    * https://rancher.com/docs/rancher/v2.x/en/installation/ha
+    * https://rancher.com/docs/rancher/v2.x/en/installation/ha/create-nodes-lb/
 
 ## References
 * [Ingress on Rancher](https://rancher.com/docs/rancher/v2.x/en/k8s-in-rancher/load-balancers-and-ingress/ingress/)
