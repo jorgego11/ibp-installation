@@ -75,11 +75,10 @@ The following are the steps I took for getting familiar with Rancher and install
     ibpconsole     1/1     1            1           56m
     ```
 
-10) Updated the firewall configuration on the load balancer VM to allow access to ports `30000` and `30001`:
+10) Updated the firewall configuration on the load balancer VM to allow access to the following port range:
 
     ```
-    $ sudo ufw allow 30000
-    $ sudo ufw allow 30001
+    $ sudo ufw allow 30000:32767/tcp
     ```
     
     Also, updated the `nginx` [configuration](nginx/nginx.conf) so it can forward requests to ports `30000` and `30001` on each one of the worker nodes.
