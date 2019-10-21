@@ -35,6 +35,7 @@ The following are the steps I took for getting familiar with Rancher and install
 6) Created `nginx.conf` configuration file on load balancer VM. See Rancher [documentation](https://rancher.com/docs/rancher/v2.x/en/installation/ha/create-nodes-lb/nginx/) for details. Also as reference, see:
     * [nginx.conf](nginx/nginx.conf)
     * [unknown-directive-stream](https://serverfault.com/questions/858067/unknown-directive-stream-in-etc-nginx-nginx-conf86)
+    * [How to reload and restart Nginx](https://help.dreamhost.com/hc/en-us/articles/216454967-How-to-reload-and-restart-Nginx-Dedicated-servers-only-)
 
 7) Before proceeding with next steps, I ensured my SSH key had been added to the ssh-agent. See [here](https://help.github.com/en/github/authenticating-to-github/generating-a-new-ssh-key-and-adding-it-to-the-ssh-agent) for instructions.
 
@@ -74,16 +75,16 @@ The following are the steps I took for getting familiar with Rancher and install
     ibpconsole     1/1     1            1           56m
     ```
 
-10) Updated the firewall configuration on the load balancer VM to allow access to port `30000`:
+10) Updated the firewall configuration on the load balancer VM to allow access to ports `30000` and `30001`:
 
     ```
     $ sudo ufw allow 30000
-
+    $ sudo ufw allow 30001
     ```
     
-    Also, updated the `nginx` [configuration](nginx/nginx.conf) so it can forward requests to port `30000` on each one of the worker nodes.
+    Also, updated the `nginx` [configuration](nginx/nginx.conf) so it can forward requests to ports `30000` and `30001` on each one of the worker nodes.
 
-11) After updating the load balancer and verifying that both IBP deployments (i.e. `ibp-operator` and `ibpconsole`) were up and running on the cluster, I was able to access the IBP Console (`https://<load balancer IP>:30000`) and successfully created several blockchain artifacts (e.g. peers, MSPs, CAs, etc.).
+11) After updating the load balancer and verifying that both IBP deployments (i.e. `ibp-operator` and `ibpconsole`) were up and running on the cluster, I was able to access the IBP Console (`https://<load balancer IP>:30000`)... now, having issues with creating blockchain artifacts (e.g. peers, MSPs, CAs, etc.). Looking into this!
 
 ## Troubleshooting & tips
 * [waiting for server-url issue](https://github.com/rancher/rancher/issues/16213)
