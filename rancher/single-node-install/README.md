@@ -79,7 +79,7 @@ Please note that instead of using a bare-metal machine, you can provision a VM o
     local-path   rancher.io/local-path   4s
     ```
 
-9) Finally, proceeded to install IBP using the installation [script](ibp4k8s.sh) in this folder:
+9) Finally, proceeded to install IBP using the installation [script](../ibp4k8s.sh):
     * Updated storage class to `local-path` (instead of `default`).
     * Used the IP address assigned to the worker node as the domain (proxy IP) value (in theory, we would instead use a proxy IP address/domain).
 
@@ -90,7 +90,7 @@ Please note that instead of using a bare-metal machine, you can provision a VM o
     ibpconsole     1/1     1            1           56m
     ```
 
-10) After both deployments (i.e. ibp-operator and ibpconsole) were up and running on the cluster, I was able to access the IBP Console and successfully created several blockchain artifacts (e.g. peers, MSPs, CAs, etc.).
+10) After both deployments (i.e. `ibp-operator` and `ibpconsole`) were up and running on the cluster, I was able to access the IBP Console and successfully created several blockchain artifacts (e.g. peers, MSPs, CAs, etc.).
 
 ## Tips
 * If you run into an error similar to "`[etcd] Failed to bring up Etcd Plane: [etcd] Etcd Cluster is not healthy`" while re-creating a cluster on Rancher, follow the steps outlined [here](https://github.com/rancher/rancher/issues/19882#issuecomment-501056386) to clean up your environment.
