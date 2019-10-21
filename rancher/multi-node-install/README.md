@@ -74,14 +74,16 @@ The following are the steps I took for getting familiar with Rancher and install
     ibpconsole     1/1     1            1           56m
     ```
 
-10) Updated the `nginx` configuraiton on the load balancer VM to allow access to port `30000`:
+10) Updated the firewall configuration on the load balancer VM to allow access to port `30000`:
 
     ```
     $ sudo ufw allow 30000
 
     ```
+    
+    Also, updated the `nginx` [configuration](nginx/nginx.conf) so it can forward requests to port `30000` on each one of the worker nodes.
 
-10) After updating the load balancer and verifying that both IBP deployments (i.e. `ibp-operator` and `ibpconsole`) were up and running on the cluster, I was able to access the IBP Console (`https://<load balancer IP>:30000`) and successfully created several blockchain artifacts (e.g. peers, MSPs, CAs, etc.).
+11) After updating the load balancer and verifying that both IBP deployments (i.e. `ibp-operator` and `ibpconsole`) were up and running on the cluster, I was able to access the IBP Console (`https://<load balancer IP>:30000`) and successfully created several blockchain artifacts (e.g. peers, MSPs, CAs, etc.).
 
 ## Troubleshooting & tips
 * [waiting for server-url issue](https://github.com/rancher/rancher/issues/16213)
