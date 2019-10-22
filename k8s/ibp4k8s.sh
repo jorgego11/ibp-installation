@@ -59,35 +59,7 @@ function executeCommand {
   fi
 }
 
-LOCAL_REGISTRY=`jq -r .LOCAL_REGISTRY ibp4k8s.json`
-log "LOCAL_REGISTRY is: $LOCAL_REGISTRY"
-
-USER=`jq -r .USER ibp4k8s.json`
-log "USER is: $USER"
-
-EMAIL=`jq -r .EMAIL ibp4k8s.json`
-log "EMAIL to use for the IBP console is: $EMAIL"
-
-LOCAL_REGISTRY_PASSWORD=`jq -r .LOCAL_REGISTRY_PASSWORD ibp4k8s.json`
-#log "LOCAL_REGISTRY_PASSWORD entitlement key is: $LOCAL_REGISTRY_PASSWORD"
-
-NAMESPACE=`jq -r .NAMESPACE ibp4k8s.json`
-log "NAMESPACE is: $NAMESPACE"
-
-PASSWORD=`jq -r .PASSWORD ibp4k8s.json`
-log "IBP Console Password is: $PASSWORD"
-
-DOMAIN=`jq -r .DOMAIN ibp4k8s.json`
-log "Domain is: $DOMAIN"
-
-CONSOLE_PORT=`jq -r .CONSOLE_PORT ibp4k8s.json`
-log "Console port is: $CONSOLE_PORT"
-
-PROXY_PORT=`jq -r .PROXY_PORT ibp4k8s.json`
-log "Proxy port is: $PROXY_PORT"
-
-STORAGE_CLASS=`jq -r .STORAGE_CLASS ibp4k8s.json`
-log "Storage class is: $STORAGE_CLASS"
+CONFIG_FILE=$1
 
 ### Checks
 if [ -z "$KUBECONFIG" ]
@@ -97,6 +69,46 @@ then
 else
       log "KUBECONFIG is set to: $KUBECONFIG"
 fi
+
+if [ -z "$CONFIG_FILE" ]
+then
+      log "CONFIG_FILE is not set. Exiting script!"
+      exit 1
+else
+      log "CONFIG_FILE is set to: $CONFIG_FILE"
+fi
+
+log "CONFIG_FILE is: $CONFIG_FILE"
+
+LOCAL_REGISTRY=`jq -r .LOCAL_REGISTRY "$CONFIG_FILE"`
+log "LOCAL_REGISTRY is: $LOCAL_REGISTRY"
+
+USER=`jq -r .USER "$CONFIG_FILE"`
+log "USER is: $USER"
+
+EMAIL=`jq -r .EMAIL "$CONFIG_FILE"`
+log "EMAIL to use for the IBP console is: $EMAIL"
+
+LOCAL_REGISTRY_PASSWORD=`jq -r .LOCAL_REGISTRY_PASSWORD "$CONFIG_FILE"`
+#log "LOCAL_REGISTRY_PASSWORD entitlement key is: $LOCAL_REGISTRY_PASSWORD"
+
+NAMESPACE=`jq -r .NAMESPACE "$CONFIG_FILE"`
+log "NAMESPACE is: $NAMESPACE"
+
+PASSWORD=`jq -r .PASSWORD "$CONFIG_FILE"`
+log "IBP Console Password is: $PASSWORD"
+
+DOMAIN=`jq -r .DOMAIN "$CONFIG_FILE"`
+log "Domain is: $DOMAIN"
+
+CONSOLE_PORT=`jq -r .CONSOLE_PORT "$CONFIG_FILE"`
+log "Console port is: $CONSOLE_PORT"
+
+PROXY_PORT=`jq -r .PROXY_PORT "$CONFIG_FILE"`
+log "Proxy port is: $PROXY_PORT"
+
+STORAGE_CLASS=`jq -r .STORAGE_CLASS "$CONFIG_FILE"`
+log "Storage class is: $STORAGE_CLASS"
 
 ### Delete resources from previous installation if they exist
 ### As reference, see https://kubernetes.io/docs/tasks/administer-cluster/namespaces/#deleting-a-namespace
