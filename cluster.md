@@ -6,7 +6,9 @@ Ricardos-MacBook-Pro-9:k8s olivieri$ ibmcloud ks cluster get --cluster mycluster
 Ingress Subdomain:              -   
 Ingress Secret:                 -   
 ```
-After several minutes, the ingress domain finally showed up...
+
+After several minutes, the ingress domain finally showed up:
+
 ```
 Ricardos-MacBook-Pro-9:k8s olivieri$ ibmcloud ks cluster get --cluster mycluster-ibp | grep Ingress
 Ingress Subdomain:              mycluster-ibp.us-south.containers.appdomain.cloud   

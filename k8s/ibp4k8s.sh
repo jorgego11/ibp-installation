@@ -46,8 +46,17 @@ function log {
 }
 
 function executeCommand {
-  output=$(($@) 2>&1)
+  local command=$1
+  local continueOnError=$2
+  output=$(bash -c '('"$command"'); exit $?' 2>&1)
+  local retCode=$?
   log $output
+
+  if (([ ! -z "$continueOnError" ] && [ "$continueOnError" = false ]) || [ -z "$continueOnError" ]) && [ $retCode -ne 0 ]
+  then
+    log "Exiting script due to fatal error (see above)."
+    exit $retCode
+  fi
 }
 
 LOCAL_REGISTRY=`jq -r .LOCAL_REGISTRY ibp4k8s.json`
@@ -71,6 +80,15 @@ log "IBP Console Password is: $PASSWORD"
 DOMAIN=`jq -r .DOMAIN ibp4k8s.json`
 log "Domain is: $DOMAIN"
 
+CONSOLE_PORT=`jq -r .CONSOLE_PORT ibp4k8s.json`
+log "Console port is: $CONSOLE_PORT"
+
+PROXY_PORT=`jq -r .PROXY_PORT ibp4k8s.json`
+log "Proxy port is: $PROXY_PORT"
+
+STORAGE_CLASS=`jq -r .STORAGE_CLASS ibp4k8s.json`
+log "Storage class is: $STORAGE_CLASS"
+
 ### Checks
 if [ -z "$KUBECONFIG" ]
 then
@@ -83,12 +101,8 @@ fi
 ### Delete resources from previous installation if they exist
 ### As reference, see https://kubernetes.io/docs/tasks/administer-cluster/namespaces/#deleting-a-namespace
 log "Deleting existing resources from previous runs..."
-set +e
-executeCommand "kubectl delete namespaces $NAMESPACE"
-executeCommand "kubectl delete clusterrolebinding $NAMESPACE"
-
-# From now on, exit if any command fails
-set -e
+executeCommand "kubectl delete namespaces $NAMESPACE" true
+executeCommand "kubectl delete clusterrolebinding $NAMESPACE" true
 
 #### Start deployment
 log "Starting IBP deployment...."
@@ -214,22 +228,6 @@ EOF
 
 executeCommand "kubectl apply -f ibp-clusterrole.yaml -n $NAMESPACE"
 
-### Define default service account
-#(
-#cat<<EOF
-#apiVersion: v1
-#kind: ServiceAccount
-#metadata:
-#  name: default
-#EOF
-
-#)> ibp-serviceaccount.yaml
-
-#executeCommand "kubectl apply -f ibp-serviceaccount.yaml -n $NAMESPACE"
-
-### Define role binding
-#executeCommand "kubectl -n $NAMESPACE create rolebinding ibp-operator-rolebinding --clusterrole=ibp-operator --group=system:serviceaccounts:$NAMESPACE"
-
 ### Define cluster role binding
 (
 cat<<EOF
@@ -250,6 +248,8 @@ EOF
 )> ibp-clusterrolebinding.yaml
 
 executeCommand "kubectl apply -f ibp-clusterrolebinding.yaml -n $NAMESPACE"
+### If the ClusterRoleBinding is not created, the following error will occur when installing the IBP Console:
+### error: unable to recognize "ibp-console.yaml": no matches for kind "IBPConsole" in version "ibp.com/v1alpha1"
 
 ### Create k8s secret for downloading IBP images
 executeCommand "kubectl create secret docker-registry docker-key-secret --docker-server=$LOCAL_REGISTRY --docker-username=$USER --docker-password=$LOCAL_REGISTRY_PASSWORD --docker-email=$EMAIL -n $NAMESPACE"
@@ -429,12 +429,12 @@ spec:
             grpcwebImage: $LOCAL_REGISTRY/cp/ibp-grpcweb
             grpcwebTag: 2.1.0-20190924-amd64
   networkinfo:
-    consolePort: 30000
-    proxyPort: 30001
+    consolePort: $CONSOLE_PORT
+    proxyPort: $PROXY_PORT
     domain: $DOMAIN
   storage:
     console:
-      class: default
+      class: $STORAGE_CLASS
       size: 10Gi
 
 EOF
@@ -451,10 +451,10 @@ log "You can issue:"
 log "   kubectl get deployments -n $NAMESPACE"
 log "and when both the ibp-operator and ibpconsole are in the 'Available' state, you are ready to roll!"
 log "To launch the IBP Console go to:"
-log "https://$DOMAIN:30000"
+log "https://$DOMAIN:$CONSOLE_PORT"
 
 #kubectl get deployments -n $NAMESPACE
 #kubectl get pods -n $NAMESPACE
 #kubectl describe ibpconsole -n $NAMESPACE
 
-exit
+exit 0
