@@ -2,4 +2,4 @@
 
 ToDo
 
-* [IKS and Proxy IP (ingress sub-domain)](k8s/iks.md)
+* [IKS and Proxy IP (ingress sub-domain)](iks.md)
