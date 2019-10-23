@@ -1,11 +1,9 @@
 #!/bin/bash
 
 #
-# To run the script you need to modify the: ibp4k8s.json file located in this same directory.
+#  To run the script you need to create a configuration file and provide its path as an input parameter to this script.
 #
-#  A sample is shown below.  Some of the json data is filled in and some you must obtain.
-#   
-#  For the fields you need to obtain the value, here is where you get the information.
+#  See below for a description of rht configuration fields.
 #     
 #  USER:
 #    THE user is the user name associated with your docker username.
@@ -29,16 +27,14 @@
 #    Your cluster domain. On IKS (IBM Cloud), this is your ingress subdomain, which you can obtain by running 
 #    ibmcloud ks cluster get --cluster <cluster name> | grep -i ingress
 #
-# Sample ibp4k8s.json
-# {
-#   "LOCAL_REGISTRY" : "ip-ibp-images-team-docker-remote.artifactory.swg-devops.com/cp",
-#   "USER" : "<USER>",
-#   "EMAIL" : "<EMAIL>",
-#   "LOCAL_REGISTRY_PASSWORD": "<LOCAL_REGISTRY_PASSWORD>",
-#   "NAMESPACE": "<NAMESPACE>",
-#   "PASSWORD": "<PASSWORD>",
-#   "DOMAIN": "<DOMAIN>"
-# }
+#  CONSOLE_PORT:
+#    The port for the IBP Console app. It should be an unused port in the NodePort range.
+#
+#  PROXY_PORT:
+#    The port for the IBP proxy component. It should be an unused port in the NodePort range.
+#
+#  STORAGE_CLASS:
+#    The name of the storage class that IBP should use.
 #
 
 function log {
