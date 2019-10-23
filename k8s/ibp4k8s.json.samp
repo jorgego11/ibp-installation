@@ -1,9 +1,12 @@
 {
-"LOCAL_REGISTRY" : "ip-ibp-images-team-docker-remote.artifactory.swg-devops.com/cp",
-"USER" : "<USER>",
-"EMAIL" : "<EMAIL>",
-"LOCAL_REGISTRY_PASSWORD": "<LOCAL_REGISTRY_PASSWORD>",
-"NAMESPACE": "<NAMESPACE>",
-"PASSWORD": "<PASSWORD>",
-"DOMAIN": "<DOMAIN>"
+    "LOCAL_REGISTRY" : "ip-ibp-images-team-docker-remote.artifactory.swg-devops.com/cp",
+    "USER" : "<USER>",
+    "EMAIL" : "<EMAIL>",
+    "LOCAL_REGISTRY_PASSWORD": "<LOCAL_REGISTRY_PASSWORD>",
+    "NAMESPACE": "<NAMESPACE>",
+    "PASSWORD": "<PASSWORD>",
+    "DOMAIN": "<DOMAIN>"
+    "CONSOLE_PORT": <CONSOLE_PORT>,
+    "PROXY_PORT": <PROXY_PORT>,
+    "STORAGE_CLASS": "<STORAGE_CLASS>"
 }
