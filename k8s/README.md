@@ -10,5 +10,7 @@ Once you have an operational Kubernetes cluster up and running, you should be ab
     ./ibp4k8s.sh <config file>
     ```
 
+1. As the script runs, pay attention to the output/logs. Watch out for errors; if a fatal error occurs, the script will stop its execution.
+
 ## Resources
 * [IKS and Proxy IP (ingress sub-domain)](iks.md)
