@@ -79,9 +79,9 @@ Please note that instead of using a bare-metal machine, you can provision a VM o
     local-path   rancher.io/local-path   4s
     ```
 
-9) Finally, proceeded to install IBP using the installation [script](../ibp4k8s.sh):
+9) Finally, proceeded to install IBP using the installation [script](../../k8s/ibp4k8s.sh):
     * Updated storage class to `local-path` (instead of `default`).
-    * Used the IP address assigned to the worker node as the domain (proxy IP) value (in theory, we would instead use a proxy IP address/domain).
+    * Since this is a single node installation, I used the IP address assigned to the worker node as the domain (proxy IP) value (for a multi node installation, we would instead use a proxy IP address/domain).
 
     ```
     $ kubectl get deployments -n ibp-installation-tst
@@ -96,7 +96,6 @@ Please note that instead of using a bare-metal machine, you can provision a VM o
 * If you run into an error similar to "`[etcd] Failed to bring up Etcd Plane: [etcd] Etcd Cluster is not healthy`" while re-creating a cluster on Rancher, follow the steps outlined [here](https://github.com/rancher/rancher/issues/19882#issuecomment-501056386) to clean up your environment.
 
 ## Observations
-* If nothing changes, I can make a few minor enhancements to the installation script so we can use the same script for installing IBP on IKS and also on a Rancher environment.
 * Following the Ingress example instructions did not quite work for their hello-world example: https://rancher.com/docs/rancher/v2.x/en/quick-start-guide/workload/. Issues related to this problem:
     * https://github.com/rancher/rancher/issues/13351 
     * https://github.com/rancher/rancher/issues/14960

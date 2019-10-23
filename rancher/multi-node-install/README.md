@@ -30,6 +30,7 @@ The following are the steps I took for getting familiar with Rancher and install
     ```
     $ sudo usermod -a -G docker $USER
     ```
+
 5) Configured load balancer VM by installing nginx and configuring the firewall. For the firewall configuration, make sure you allow HTTP, HTTPS, and OpenSSH connections. For instructions, please see [here](https://www.digitalocean.com/community/tutorials/how-to-install-nginx-on-ubuntu-18-04). Also, as reference, see [How to setup the Nginx web server on Ubuntu 18.04 Bionic Beaver Linux](https://linuxconfig.org/how-to-setup-the-nginx-web-server-on-ubuntu-18-04-bionic-beaver-linux).
 
 6) Created `nginx.conf` configuration file on load balancer VM. See Rancher [documentation](https://rancher.com/docs/rancher/v2.x/en/installation/ha/create-nodes-lb/nginx/) for details. Also as reference, see:
@@ -64,7 +65,7 @@ The following are the steps I took for getting familiar with Rancher and install
     local-path   rancher.io/local-path   4s
     ```
 
-9) Finally, proceeded to install IBP on the cluster using the installation [script](../ibp4k8s.sh):
+9) Finally, proceeded to install IBP on the cluster using the installation [script](../../k8s/ibp4k8s.sh):
     * Updated storage class to `local-path` (instead of `default`).
     * Used the IP address/hostname assigned to the load balancer VM as the domain (proxy IP) value.
 
@@ -91,7 +92,7 @@ The following are the steps I took for getting familiar with Rancher and install
     org1ca-service       NodePort    10.43.14.235   <none>        7054:30777/TCP,9443:31624/TCP   116m
     ```
 
-    Given the corresponding k8s event, then the load balancer configuration could be updated to listen on ports 31624 and 30777. Now... I do wonder how this works today in IKS...
+    Given the corresponding k8s event, then the load balancer configuration could be updated to listen on ports 31624 and 30777. Another possible option could be to configure the load balancer up-front so it listens on all ports in the NodePort range.
 
 ## Troubleshooting & tips
 * [waiting for server-url issue](https://github.com/rancher/rancher/issues/16213)
