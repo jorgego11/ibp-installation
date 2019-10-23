@@ -100,7 +100,7 @@ The following are the steps I took for getting familiar with Rancher and install
 * Ideally, the Kubernetes cluster where the Rancher application resides should only host Rancher application. This means that IBP, in theory, should not be installed on the same cluster where Rancher is running. A separate cluster should be created for IBP and any other applications. See following links for further details: 
     * https://rancher.com/docs/rancher/v2.x/en/installation/ha
     * https://rancher.com/docs/rancher/v2.x/en/installation/ha/create-nodes-lb/
-* If your workstation is running the latest macOS version (i.e. Catalina), chances are you won't be able to access the IBP console running on the cluster because of certificates issue. This is a known problem and an [issue](https://github.ibm.com/IBM-Blockchain/blockchain-deployer/issues/2375) against IBP has been opened. As a workaround, you should access the IBP console from a different system (e.g. such as a VM running on your macOS).
+* If your workstation is running the latest macOS version (i.e. Catalina), chances are you won't be able to access the IBP console running on the cluster if using IBP's self-signed certificates. This is a known problem and an [issue](https://github.ibm.com/IBM-Blockchain/blockchain-deployer/issues/2375) against IBP has been opened. As a workaround, you should access the IBP console from a different system (e.g. such as a VM running on your macOS).
 
 ## References
 * [Ingress on Rancher](https://rancher.com/docs/rancher/v2.x/en/k8s-in-rancher/load-balancers-and-ingress/ingress/)
