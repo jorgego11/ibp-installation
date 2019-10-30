@@ -9,7 +9,7 @@ In addition to installation scripts, this repository contains notes and observat
 
 ## Table of contents
 
-1. [Kubernetes](k8s/README.md)
+1. [IKS](k8s/README.md)
 2. [OpenShift](openshift/README.md)
 3. [Rancher (single node install)](rancher/single-node-install/README.md)
 4. [Rancher (multi node install)](rancher/multi-node-install/README.md)
