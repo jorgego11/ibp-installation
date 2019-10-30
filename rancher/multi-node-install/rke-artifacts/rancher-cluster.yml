@@ -1,10 +1,15 @@
 nodes:
-  - address: rancher-node1.rtp.raleigh.ibm.com
+  - address: rancher-node3.rtp.raleigh.ibm.com
     user: ibmadmin
     #ssh_key_path: "~/.ssh/id_rsa"
     role: [controlplane,worker,etcd]
     #ssh_agent_auth: true
   - address: rancher-node2.rtp.raleigh.ibm.com
+    user: ibmadmin
+    #ssh_key_path: "~/.ssh/id_rsa"
+    role: [controlplane,worker,etcd]
+    #ssh_agent_auth: true
+  - address: rancher-node1.rtp.raleigh.ibm.com
     user: ibmadmin
     #ssh_key_path: "~/.ssh/id_rsa"
     role: [controlplane,worker,etcd]

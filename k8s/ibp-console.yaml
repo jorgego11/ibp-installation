@@ -5,7 +5,7 @@ metadata:
 spec:
   license: accept
   serviceAccountName: default
-  email: "ricardo.olivieri@us.ibm.com"
+  email: "john.doe@ibm.com"
   password: "passwd"
   image:
       imagePullSecret: docker-key-secret
@@ -58,11 +58,9 @@ spec:
             grpcwebImage: ip-ibp-images-team-docker-remote.artifactory.swg-devops.com/cp/ibp-grpcweb
             grpcwebTag: 2.1.0-20190924-amd64
   networkinfo:
-    consolePort: 30000
-    proxyPort: 30001
-    domain: mycluster-946409.us-south.containers.appdomain.cloud
+    domain: myibp.us
   storage:
     console:
-      class: default
+      class: local-path
       size: 10Gi
 

@@ -2,10 +2,10 @@
     "LOCAL_REGISTRY": "ip-ibp-images-team-docker-remote.artifactory.swg-devops.com",
     "USER": "ricardo.olivieri@us.ibm.com",
     "EMAIL": "ricardo.olivieri@us.ibm.com",
-    "LOCAL_REGISTRY_PASSWORD": "<key>",
+    "LOCAL_REGISTRY_PASSWORD": "<password>",
     "NAMESPACE": "ibp",
     "PASSWORD": "passwd",
-    "DOMAIN": "mycluster-946409.us-south.containers.appdomain.cloud",
+    "DOMAIN": "mycluster-ibp.us-south.containers.appdomain.cloud",
     "CONSOLE_PORT": 30000,
     "PROXY_PORT": 30001,
     "STORAGE_CLASS": "default"

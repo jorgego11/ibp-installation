@@ -43,10 +43,10 @@ spec:
                 values:
                 - amd64
       imagePullSecrets:
-        - name: docker-key-secret
+        - name: icr-secret
       containers:
         - name: ibp-operator
-          image: ip-ibp-images-team-docker-remote.artifactory.swg-devops.com/cp/ibp-operator:2.1.0-20190924-amd64
+          image: us.icr.io/ibp-temp/ibp-operator:be2148e3-amd64
           command:
           - ibp-operator
           imagePullPolicy: Always
@@ -85,8 +85,8 @@ spec:
                   fieldPath: metadata.name
             - name: OPERATOR_NAME
               value: "ibp-operator"
-            - name: ISOPENSHIFT
-              value: "false"
+            - name: INGRESS_NEEDED
+              value: "true"
           resources:
             requests:
               cpu: 100m

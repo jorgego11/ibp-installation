@@ -1,0 +1,10 @@
+{
+    "IMAGE_REGISTRY": "ip-ibp-images-team-docker-remote.artifactory.swg-devops.com",
+    "IMAGE_REGISTRY_USER": "ricardo.olivieri@us.ibm.com",
+    "IMAGE_REGISTRY_PASSWORD": "<password>",
+    "EMAIL": "john.doe@ibm.com",
+    "NAMESPACE": "ibp",
+    "PASSWORD": "passwd",
+    "DOMAIN": "myibp.us",
+    "STORAGE_CLASS": "local-path"
+}

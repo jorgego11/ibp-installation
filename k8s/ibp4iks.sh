@@ -5,18 +5,16 @@
 #
 #  See below for a description of rht configuration fields.
 #     
-#  IMAGE_REGISTRY_USER:
-#    The user for the image registry.
-#
-#  IMAGE_REGISTRY
-#    The server name for the image regisrtry.
-#
-#  IMAGE_REGISTRY_PASSWORD:
-#    The password to the image registry.  
-#    This is obtained by making a request in https://github.ibm.com/IBM-Blockchain/ibp-requests/blob/master/ibp-on-openshift/README.md. 
+#  USER:
+#    THE user is the user name associated with your docker username.
 #
 #  EMAIL:
-#    The login email for the IBP Console.
+#    The email is used for two purposes.
+#    The email that is used for the IBP Console login and used to obtain your local registry password. 
+#
+#  LOCAL_REGISTRY_PASSWORD:
+#    The password to your local registry.  
+#    This is obtained by making a request in https://github.ibm.com/IBM-Blockchain/ibp-requests/blob/master/ibp-on-openshift/README.md. 
 #
 #  NAMESPACE:
 #    The name of your Kubernetes namespace.
@@ -26,20 +24,26 @@
 #    upon your first login. 
 #
 #  DOMAIN:
-#    The domain value for your cluster domain, which should resolve to the IP address that is the entry point to the cluster.
+#    Your cluster domain. On IKS (IBM Cloud), this is your ingress subdomain, which you can obtain by running 
+#    ibmcloud ks cluster get --cluster <cluster name> | grep -i ingress
+#
+#  CONSOLE_PORT:
+#    The port for the IBP Console app. It should be an unused port in the NodePort range.
+#
+#  PROXY_PORT:
+#    The port for the IBP proxy component. It should be an unused port in the NodePort range.
 #
 #  STORAGE_CLASS:
 #    The name of the storage class that IBP should use.
 #
 
 function log {
-    echo "[$(date +"%m-%d-%Y %r")]: $*"
+    echo "[$(date -u)]: $*"
 }
 
 function executeCommand {
   local command=$1
   local continueOnError=$2
-  log "Executing: $command"
   output=$(bash -c '('"$command"'); exit $?' 2>&1)
   local retCode=$?
   log $output
@@ -66,23 +70,23 @@ if [ -z "$CONFIG_FILE" ]
 then
       log "CONFIG_FILE is not set. Exiting script!"
       exit 1
+else
+      log "CONFIG_FILE is set to: $CONFIG_FILE"
 fi
-
-log "Starting IBP installation process..."
 
 log "CONFIG_FILE is: $CONFIG_FILE"
 
-IMAGE_REGISTRY=`jq -r .IMAGE_REGISTRY "$CONFIG_FILE"`
-log "IMAGE_REGISTRY is: $IMAGE_REGISTRY"
+LOCAL_REGISTRY=`jq -r .LOCAL_REGISTRY "$CONFIG_FILE"`
+log "LOCAL_REGISTRY is: $LOCAL_REGISTRY"
 
-IMAGE_REGISTRY_USER=`jq -r .IMAGE_REGISTRY_USER "$CONFIG_FILE"`
-log "IMAGE_REGISTRY_USER is: $IMAGE_REGISTRY_USER"
+USER=`jq -r .USER "$CONFIG_FILE"`
+log "USER is: $USER"
 
 EMAIL=`jq -r .EMAIL "$CONFIG_FILE"`
 log "EMAIL to use for the IBP console is: $EMAIL"
 
-IMAGE_REGISTRY_PASSWORD=`jq -r .IMAGE_REGISTRY_PASSWORD "$CONFIG_FILE"`
-#log "IMAGE_REGISTRY_PASSWORD entitlement key is: $IMAGE_REGISTRY_PASSWORD"
+LOCAL_REGISTRY_PASSWORD=`jq -r .LOCAL_REGISTRY_PASSWORD "$CONFIG_FILE"`
+#log "LOCAL_REGISTRY_PASSWORD entitlement key is: $LOCAL_REGISTRY_PASSWORD"
 
 NAMESPACE=`jq -r .NAMESPACE "$CONFIG_FILE"`
 log "NAMESPACE is: $NAMESPACE"
@@ -92,6 +96,12 @@ log "IBP Console Password is: $PASSWORD"
 
 DOMAIN=`jq -r .DOMAIN "$CONFIG_FILE"`
 log "Domain is: $DOMAIN"
+
+CONSOLE_PORT=`jq -r .CONSOLE_PORT "$CONFIG_FILE"`
+log "Console port is: $CONSOLE_PORT"
+
+PROXY_PORT=`jq -r .PROXY_PORT "$CONFIG_FILE"`
+log "Proxy port is: $PROXY_PORT"
 
 STORAGE_CLASS=`jq -r .STORAGE_CLASS "$CONFIG_FILE"`
 log "Storage class is: $STORAGE_CLASS"
@@ -250,8 +260,7 @@ executeCommand "kubectl apply -f ibp-clusterrolebinding.yaml -n $NAMESPACE"
 ### error: unable to recognize "ibp-console.yaml": no matches for kind "IBPConsole" in version "ibp.com/v1alpha1"
 
 ### Create k8s secret for downloading IBP images
-executeCommand "kubectl create secret docker-registry docker-key-secret --docker-server=$IMAGE_REGISTRY --docker-username=$IMAGE_REGISTRY_USER --docker-password=$IMAGE_REGISTRY_PASSWORD --docker-email=$EMAIL -n $NAMESPACE"
-executeCommand "kubectl create secret docker-registry icr-secret --docker-server=us.icr.io --docker-username=iamapikey --docker-password=YPI_DL_6S1Pder6IsJCOLGD_16EFkJL3C0QIxRN8nEfx --docker-email=$EMAIL -n $NAMESPACE"
+executeCommand "kubectl create secret docker-registry docker-key-secret --docker-server=$LOCAL_REGISTRY --docker-username=$USER --docker-password=$LOCAL_REGISTRY_PASSWORD --docker-email=$EMAIL -n $NAMESPACE"
 
 ### Define deployment for IBP operator component
 (
@@ -301,10 +310,10 @@ spec:
                 values:
                 - amd64
       imagePullSecrets:
-        - name: icr-secret
+        - name: docker-key-secret
       containers:
         - name: ibp-operator
-          image: us.icr.io/ibp-temp/ibp-operator:be2148e3-amd64
+          image: $LOCAL_REGISTRY/cp/ibp-operator:2.1.0-20190924-amd64
           command:
           - ibp-operator
           imagePullPolicy: Always
@@ -343,8 +352,8 @@ spec:
                   fieldPath: metadata.name
             - name: OPERATOR_NAME
               value: "ibp-operator"
-            - name: INGRESS_NEEDED
-              value: "true"
+            - name: ISOPENSHIFT
+              value: "false"
           resources:
             requests:
               cpu: 100m
@@ -360,7 +369,7 @@ executeCommand "kubectl apply -f ibp-operator.yaml -n $NAMESPACE"
 
 ### Wait 35 seconds before continuing... the operator should be running on your namespace
 ### before you can apply the IBM Blockchain Platform console object.
-log "Sleeping for 35 seconds... waiting for operator to settle."
+log "Sleeping for 35 seconds... waiting for operator to settle"
 sleep 35
 
 executeCommand "kubectl get deployment -n $NAMESPACE"
@@ -379,15 +388,15 @@ spec:
   password: "$PASSWORD"
   image:
       imagePullSecret: docker-key-secret
-      consoleInitImage: $IMAGE_REGISTRY/cp/ibp-init
+      consoleInitImage: $LOCAL_REGISTRY/cp/ibp-init
       consoleInitTag: 2.1.0-20190924-amd64
-      consoleImage: $IMAGE_REGISTRY/cp/ibp-console
+      consoleImage: $LOCAL_REGISTRY/cp/ibp-console
       consoleTag: 2.1.0-20190924-amd64
-      configtxlatorImage: $IMAGE_REGISTRY/cp/ibp-utilities
+      configtxlatorImage: $LOCAL_REGISTRY/cp/ibp-utilities
       configtxlatorTag: 1.4.3-20190924-amd64
-      couchdbImage: $IMAGE_REGISTRY/cp/ibp-couchdb
+      couchdbImage: $LOCAL_REGISTRY/cp/ibp-couchdb
       couchdbTag: 2.3.1-20190924-amd64
-      deployerImage: $IMAGE_REGISTRY/cp/ibp-deployer
+      deployerImage: $LOCAL_REGISTRY/cp/ibp-deployer
       deployerTag: 2.1.0-20190924-amd64
   versions:
       ca:
@@ -395,39 +404,41 @@ spec:
           default: true
           version: 1.4.3-0
           image:
-            caInitImage: $IMAGE_REGISTRY/cp/ibp-ca-init
+            caInitImage: $LOCAL_REGISTRY/cp/ibp-ca-init
             caInitTag: 2.1.0-20190924-amd64
-            caImage: $IMAGE_REGISTRY/cp/ibp-ca
+            caImage: $LOCAL_REGISTRY/cp/ibp-ca
             caTag: 1.4.3-20190924-amd64
       peer:
         1.4.3-0:
           default: true
           version: 1.4.3-0
           image:
-            peerInitImage: $IMAGE_REGISTRY/cp/ibp-init
+            peerInitImage: $LOCAL_REGISTRY/cp/ibp-init
             peerInitTag: 2.1.0-20190924-amd64
-            peerImage: $IMAGE_REGISTRY/cp/ibp-peer
+            peerImage: $LOCAL_REGISTRY/cp/ibp-peer
             peerTag: 1.4.3-20190924-amd64
-            dindImage: $IMAGE_REGISTRY/cp/ibp-dind
+            dindImage: $LOCAL_REGISTRY/cp/ibp-dind
             dindTag: 1.4.3-20190924-amd64
-            fluentdImage: $IMAGE_REGISTRY/cp/ibp-fluentd
+            fluentdImage: $LOCAL_REGISTRY/cp/ibp-fluentd
             fluentdTag: 2.1.0-20190924-amd64
-            grpcwebImage: $IMAGE_REGISTRY/cp/ibp-grpcweb
+            grpcwebImage: $LOCAL_REGISTRY/cp/ibp-grpcweb
             grpcwebTag: 2.1.0-20190924-amd64
-            couchdbImage: $IMAGE_REGISTRY/cp/ibp-couchdb
+            couchdbImage: $LOCAL_REGISTRY/cp/ibp-couchdb
             couchdbTag: 2.3.1-20190924-amd64
       orderer:
         1.4.3-0:
           default: true
           version: 1.4.3-0
           image:
-            ordererInitImage: $IMAGE_REGISTRY/cp/ibp-init
+            ordererInitImage: $LOCAL_REGISTRY/cp/ibp-init
             ordererInitTag: 2.1.0-20190924-amd64
-            ordererImage: $IMAGE_REGISTRY/cp/ibp-orderer
+            ordererImage: $LOCAL_REGISTRY/cp/ibp-orderer
             ordererTag: 1.4.3-20190924-amd64
-            grpcwebImage: $IMAGE_REGISTRY/cp/ibp-grpcweb
+            grpcwebImage: $LOCAL_REGISTRY/cp/ibp-grpcweb
             grpcwebTag: 2.1.0-20190924-amd64
   networkinfo:
+    consolePort: $CONSOLE_PORT
+    proxyPort: $PROXY_PORT
     domain: $DOMAIN
   storage:
     console:
@@ -441,12 +452,14 @@ executeCommand "kubectl apply -f ibp-console.yaml -n $NAMESPACE"
 
 ####
 #### Ok...deployment is complete. Verifying the installation.
+#### URL for IBP console: https://$DOMAIN:<console port> (see console port value assigned above)
 log "The installation is now complete!"
 log "Note: It will take approximately 10 minutes for the IBP console to be available."
-log "You can issue: kubectl get deployments -n $NAMESPACE"
-log "When both the ibp-operator and ibpconsole are in the 'Available' state, you are ready to roll!"
+log "You can issue:"
+log "   kubectl get deployments -n $NAMESPACE"
+log "and when both the ibp-operator and ibpconsole are in the 'Available' state, you are ready to roll!"
 log "To launch the IBP Console go to:"
-log "https://$NAMESPACE-ibpconsole-console.$DOMAIN"
+log "https://$DOMAIN:$CONSOLE_PORT"
 
 #kubectl get deployments -n $NAMESPACE
 #kubectl get pods -n $NAMESPACE
