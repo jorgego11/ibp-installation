@@ -13,3 +13,7 @@ In addition to installation scripts, this repository contains notes and observat
 2. [OpenShift](openshift/README.md)
 3. [Rancher (single node install)](rancher/single-node-install/README.md)
 4. [Rancher (multi node install)](rancher/multi-node-install/README.md)
+
+## Additional resources
+
+* [ansible-role-blockchain-platform-manager](https://github.com/IBM-Blockchain/ansible-role-blockchain-platform-manager) - Ansible scripts for defining your Fabric blockchain network once IBP is up and running.
