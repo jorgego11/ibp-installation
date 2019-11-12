@@ -22,7 +22,7 @@ REGISTRY=ip-ibp-images-team-docker-remote.artifactory.swg-devops.com
 REGISTRY_PATH=cp
 
 echo ">> Logging to Docker image registry: $REGISTRY"
-docker login ip-ibp-images-team-docker-remote.artifactory.swg-devops.com --username $IMAGE_REGISTRY_USER --password $IMAGE_REGISTRY_PASSWORD
+docker login $REGISTRY --username $IMAGE_REGISTRY_USER --password $IMAGE_REGISTRY_PASSWORD
 
 function tarImage {
     local IMAGE=$1
