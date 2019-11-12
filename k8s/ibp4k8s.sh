@@ -251,7 +251,6 @@ executeCommand "kubectl apply -f ibp-clusterrolebinding.yaml -n $NAMESPACE"
 
 ### Create k8s secret for downloading IBP images
 executeCommand "kubectl create secret docker-registry docker-key-secret --docker-server=$IMAGE_REGISTRY --docker-username=$IMAGE_REGISTRY_USER --docker-password=$IMAGE_REGISTRY_PASSWORD --docker-email=$EMAIL -n $NAMESPACE"
-executeCommand "kubectl create secret docker-registry icr-secret --docker-server=us.icr.io --docker-username=iamapikey --docker-password=YPI_DL_6S1Pder6IsJCOLGD_16EFkJL3C0QIxRN8nEfx --docker-email=$EMAIL -n $NAMESPACE"
 
 ### Define deployment for IBP operator component
 (
@@ -301,10 +300,10 @@ spec:
                 values:
                 - amd64
       imagePullSecrets:
-        - name: icr-secret
+        - name: docker-key-secret
       containers:
         - name: ibp-operator
-          image: us.icr.io/ibp-temp/ibp-operator:be2148e3-amd64
+          image: $IMAGE_REGISTRY/cp/ibp-operator:2.1.1-20191108-amd64
           command:
           - ibp-operator
           imagePullPolicy: Always
@@ -380,15 +379,15 @@ spec:
   image:
       imagePullSecret: docker-key-secret
       consoleInitImage: $IMAGE_REGISTRY/cp/ibp-init
-      consoleInitTag: 2.1.0-20190924-amd64
+      consoleInitTag: 2.1.1-20191108-amd64
       consoleImage: $IMAGE_REGISTRY/cp/ibp-console
-      consoleTag: 2.1.0-20190924-amd64
+      consoleTag: 2.1.1-20191108-amd64
       configtxlatorImage: $IMAGE_REGISTRY/cp/ibp-utilities
-      configtxlatorTag: 1.4.3-20190924-amd64
+      configtxlatorTag: 1.4.3-20191108-amd64
       couchdbImage: $IMAGE_REGISTRY/cp/ibp-couchdb
-      couchdbTag: 2.3.1-20190924-amd64
+      couchdbTag: 2.3.1-20191108-amd64
       deployerImage: $IMAGE_REGISTRY/cp/ibp-deployer
-      deployerTag: 2.1.0-20190924-amd64
+      deployerTag: 2.1.1-20191108-amd64
   versions:
       ca:
         1.4.3-0:
@@ -396,37 +395,37 @@ spec:
           version: 1.4.3-0
           image:
             caInitImage: $IMAGE_REGISTRY/cp/ibp-ca-init
-            caInitTag: 2.1.0-20190924-amd64
+            caInitTag: 2.1.1-20191108-amd64
             caImage: $IMAGE_REGISTRY/cp/ibp-ca
-            caTag: 1.4.3-20190924-amd64
+            caTag: 1.4.3-20191108-amd64
       peer:
         1.4.3-0:
           default: true
           version: 1.4.3-0
           image:
             peerInitImage: $IMAGE_REGISTRY/cp/ibp-init
-            peerInitTag: 2.1.0-20190924-amd64
+            peerInitTag: 2.1.1-20191108-amd64
             peerImage: $IMAGE_REGISTRY/cp/ibp-peer
-            peerTag: 1.4.3-20190924-amd64
+            peerTag: 1.4.3-20191108-amd64
             dindImage: $IMAGE_REGISTRY/cp/ibp-dind
-            dindTag: 1.4.3-20190924-amd64
+            dindTag: 1.4.3-20191108-amd64
             fluentdImage: $IMAGE_REGISTRY/cp/ibp-fluentd
-            fluentdTag: 2.1.0-20190924-amd64
+            fluentdTag: 2.1.1-20191108-amd64
             grpcwebImage: $IMAGE_REGISTRY/cp/ibp-grpcweb
-            grpcwebTag: 2.1.0-20190924-amd64
+            grpcwebTag: 2.1.1-20191108-amd64
             couchdbImage: $IMAGE_REGISTRY/cp/ibp-couchdb
-            couchdbTag: 2.3.1-20190924-amd64
+            couchdbTag: 2.3.1-20191108-amd64
       orderer:
         1.4.3-0:
           default: true
           version: 1.4.3-0
           image:
             ordererInitImage: $IMAGE_REGISTRY/cp/ibp-init
-            ordererInitTag: 2.1.0-20190924-amd64
+            ordererInitTag: 2.1.1-20191108-amd64
             ordererImage: $IMAGE_REGISTRY/cp/ibp-orderer
-            ordererTag: 1.4.3-20190924-amd64
+            ordererTag: 1.4.3-20191108-amd64
             grpcwebImage: $IMAGE_REGISTRY/cp/ibp-grpcweb
-            grpcwebTag: 2.1.0-20190924-amd64
+            grpcwebTag: 2.1.1-20191108-amd64
   networkinfo:
     domain: $DOMAIN
   storage:
