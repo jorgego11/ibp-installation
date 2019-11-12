@@ -13,7 +13,8 @@ IBP_IMAGES1=(ibp-operator ibp-ca-init ibp-init ibp-console ibp-grpcweb ibp-fluen
 IBP_IMAGES_TAG1=2.1.0-20190924-amd64
 IBP_IMAGES2=(ibp-couchdb)
 IBP_IMAGES_TAG2=2.3.1-20190924-amd64
-FABRIC_IMAGES=(ibp-peer ibp-ca ibp-orderer ibp-dind ibp-utilities ibp-ccenv ibp-nodeenv ibp-goenv)
+#FABRIC_IMAGES=(ibp-peer ibp-ca ibp-orderer ibp-dind ibp-utilities ibp-ccenv ibp-nodeenv ibp-goenv)
+FABRIC_IMAGES=(ibp-peer ibp-ca ibp-orderer ibp-dind ibp-utilities)
 FABRIC_IMAGES_TAG=1.4.3-20190924-amd64
 
 # Registry
