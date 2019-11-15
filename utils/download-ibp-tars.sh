@@ -2,10 +2,10 @@
 
 set -e
 
-export API_KEY="AKCp5e2WkTyUVaaEp51mEMMV3NziWivmuvBcSBKw8aH3uo6zBUbXSGE35mjhPBdRxrXDV7Tx6"
+export API_KEY="<api key>"
 
 FILES="ibp-operator.tar.gz ibp-utilities.tar.gz ibp-ca-init.tar.gz ibp-ca.tar.gz ibp-console.tar.gz ibp-couchdb.tar.gz ibp-deployer.tar.gz ibp-fluentd.tar.gz ibp-grpcweb.tar.gz ibp-init.tar.gz ibp-orderer.tar.gz  ibp-peer.tar.gz ibp-dind.tar.gz ibp-goenv.tar.gz ibp-nodeenv.tar.gz ibp-ccenv.tar.gz"
-#FILES="ibp-goenv.tar.gz ibp-nodeenv.tar.gz ibp-ccenv.tar.gz"
+#FILES="ibp-fluentd.tar.gz"
 
 for FILE in ${FILES}; do
     echo ">> Downloading: $FILE"
