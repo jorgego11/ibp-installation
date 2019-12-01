@@ -313,7 +313,7 @@ spec:
         - name: docker-key-secret
       containers:
         - name: ibp-operator
-          image: $LOCAL_REGISTRY/cp/ibp-operator:2.1.0-20190924-amd64
+          image: $LOCAL_REGISTRY/cp/ibp-operator:2.1.1-20191108-amd64
           command:
           - ibp-operator
           imagePullPolicy: Always
@@ -389,15 +389,15 @@ spec:
   image:
       imagePullSecret: docker-key-secret
       consoleInitImage: $LOCAL_REGISTRY/cp/ibp-init
-      consoleInitTag: 2.1.0-20190924-amd64
+      consoleInitTag: 2.1.1-20191108-amd64
       consoleImage: $LOCAL_REGISTRY/cp/ibp-console
-      consoleTag: 2.1.0-20190924-amd64
+      consoleTag: 2.1.1-20191108-amd64
       configtxlatorImage: $LOCAL_REGISTRY/cp/ibp-utilities
-      configtxlatorTag: 1.4.3-20190924-amd64
+      configtxlatorTag: 1.4.3-20191108-amd64
       couchdbImage: $LOCAL_REGISTRY/cp/ibp-couchdb
-      couchdbTag: 2.3.1-20190924-amd64
+      couchdbTag: 2.3.1-20191108-amd64
       deployerImage: $LOCAL_REGISTRY/cp/ibp-deployer
-      deployerTag: 2.1.0-20190924-amd64
+      deployerTag: 2.1.1-20191108-amd64
   versions:
       ca:
         1.4.3-0:
@@ -405,7 +405,7 @@ spec:
           version: 1.4.3-0
           image:
             caInitImage: $LOCAL_REGISTRY/cp/ibp-ca-init
-            caInitTag: 2.1.0-20190924-amd64
+            caInitTag: 2.1.1-20191108-amd64
             caImage: $LOCAL_REGISTRY/cp/ibp-ca
             caTag: 1.4.3-20190924-amd64
       peer:
@@ -414,28 +414,28 @@ spec:
           version: 1.4.3-0
           image:
             peerInitImage: $LOCAL_REGISTRY/cp/ibp-init
-            peerInitTag: 2.1.0-20190924-amd64
+            peerInitTag: 2.1.1-20191108-amd64
             peerImage: $LOCAL_REGISTRY/cp/ibp-peer
-            peerTag: 1.4.3-20190924-amd64
+            peerTag: 1.4.3-20190918-amd64
             dindImage: $LOCAL_REGISTRY/cp/ibp-dind
             dindTag: 1.4.3-20190924-amd64
             fluentdImage: $LOCAL_REGISTRY/cp/ibp-fluentd
-            fluentdTag: 2.1.0-20190924-amd64
+            fluentdTag: 2.1.1-20191108-amd64
             grpcwebImage: $LOCAL_REGISTRY/cp/ibp-grpcweb
-            grpcwebTag: 2.1.0-20190924-amd64
+            grpcwebTag: 2.1.1-20191108-amd64
             couchdbImage: $LOCAL_REGISTRY/cp/ibp-couchdb
-            couchdbTag: 2.3.1-20190924-amd64
+            couchdbTag: 2.3.1-20191108-amd64
       orderer:
         1.4.3-0:
           default: true
           version: 1.4.3-0
           image:
             ordererInitImage: $LOCAL_REGISTRY/cp/ibp-init
-            ordererInitTag: 2.1.0-20190924-amd64
+            ordererInitTag: 2.1.1-20191108-amd64
             ordererImage: $LOCAL_REGISTRY/cp/ibp-orderer
-            ordererTag: 1.4.3-20190924-amd64
+            ordererTag: 1.4.3-20191108-amd64
             grpcwebImage: $LOCAL_REGISTRY/cp/ibp-grpcweb
-            grpcwebTag: 2.1.0-20190924-amd64
+            grpcwebTag: 2.1.1-20191108-amd64
   networkinfo:
     consolePort: $CONSOLE_PORT
     proxyPort: $PROXY_PORT
