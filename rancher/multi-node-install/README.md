@@ -80,7 +80,7 @@ The following are the steps I took for getting familiar with Rancher and install
     local-path   rancher.io/local-path   4s
     ```
 
-15) Updated the `nginx` ingress controller so it sends TLS connections directly to the backend instead of performing SSL termination itself. As reference, see [SSL Passthrough](https://kubernetes.github.io/ingress-nginx/user-guide/nginx-configuration/annotations/#ssl-passthrough). This update involves editing the nginx ingress controller by adding the `--enable-ssl-passthrough` argument to the `args` array.
+15) Updated the `nginx` ingress controller to allow sending TLS connections directly to the backend instead of performing SSL termination itself. As reference, see [SSL Passthrough](https://kubernetes.github.io/ingress-nginx/user-guide/nginx-configuration/annotations/#ssl-passthrough). This update involves editing the nginx ingress controller by adding the `--enable-ssl-passthrough` argument to the `args` array.
 
     ```
     kubectl edit daemonset -n ingress-nginx nginx-ingress-controller
