@@ -158,7 +158,7 @@ apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRole
 metadata:
   creationTimestamp: null
-  name: ibp-operator
+  name: $NAMESPACE
 rules:
 - apiGroups:
   - extensions
@@ -239,7 +239,7 @@ subjects:
   namespace: $NAMESPACE
 roleRef:
   kind: ClusterRole
-  name: ibp-operator
+  name: $NAMESPACE
   apiGroup: rbac.authorization.k8s.io
 
 EOF
@@ -248,6 +248,9 @@ EOF
 executeCommand "kubectl apply -f ibp-clusterrolebinding.yaml -n $NAMESPACE"
 ### If the ClusterRoleBinding is not created, the following error will occur when installing the IBP Console:
 ### error: unable to recognize "ibp-console.yaml": no matches for kind "IBPConsole" in version "ibp.com/v1alpha1"
+
+### Create the role binding
+executeCommand "kubectl -n $NAMESPACE create rolebinding ibp-operator-rolebinding --clusterrole=$NAMESPACE --group=system:serviceaccounts:$NAMESPACE"
 
 ### Create k8s secret for downloading IBP images
 executeCommand "kubectl create secret docker-registry docker-key-secret --docker-server=$IMAGE_REGISTRY --docker-username=$IMAGE_REGISTRY_USER --docker-password=$IMAGE_REGISTRY_PASSWORD --docker-email=$EMAIL -n $NAMESPACE"
@@ -284,7 +287,7 @@ spec:
       annotations:
         productName: "IBM Blockchain Platform"
         productID: "54283fa24f1a4e8589964e6e92626ec4"
-        productVersion: "2.1.0"
+        productVersion: "2.1.2"
     spec:
       hostIPC: false
       hostNetwork: false
@@ -303,7 +306,7 @@ spec:
         - name: docker-key-secret
       containers:
         - name: ibp-operator
-          image: $IMAGE_REGISTRY/cp/ibp-operator:2.1.1-20191108-amd64
+          image: $IMAGE_REGISTRY/cp/ibp-operator:2.1.2-20191217-amd64
           command:
           - ibp-operator
           imagePullPolicy: Always
@@ -342,8 +345,8 @@ spec:
                   fieldPath: metadata.name
             - name: OPERATOR_NAME
               value: "ibp-operator"
-            - name: INGRESS_NEEDED
-              value: "true"
+            - name: CLUSTERTYPE
+              value: "IKS"
           resources:
             requests:
               cpu: 100m
@@ -366,7 +369,7 @@ executeCommand "kubectl get deployment -n $NAMESPACE"
 
 ### Define deployment for IBP console
 (
-cat<<EOF  
+cat<<EOF
 apiVersion: ibp.com/v1alpha1
 kind: IBPConsole
 metadata:
@@ -376,63 +379,15 @@ spec:
   serviceAccountName: default
   email: "$EMAIL"
   password: "$PASSWORD"
-  image:
-      imagePullSecret: docker-key-secret
-      consoleInitImage: $IMAGE_REGISTRY/cp/ibp-init
-      consoleInitTag: 2.1.1-20191108-amd64
-      consoleImage: $IMAGE_REGISTRY/cp/ibp-console
-      consoleTag: 2.1.1-20191108-amd64
-      configtxlatorImage: $IMAGE_REGISTRY/cp/ibp-utilities
-      configtxlatorTag: 1.4.3-20191108-amd64
-      couchdbImage: $IMAGE_REGISTRY/cp/ibp-couchdb
-      couchdbTag: 2.3.1-20191108-amd64
-      deployerImage: $IMAGE_REGISTRY/cp/ibp-deployer
-      deployerTag: 2.1.1-20191108-amd64
-  versions:
-      ca:
-        1.4.3-0:
-          default: true
-          version: 1.4.3-0
-          image:
-            caInitImage: $IMAGE_REGISTRY/cp/ibp-ca-init
-            caInitTag: 2.1.1-20191108-amd64
-            caImage: $IMAGE_REGISTRY/cp/ibp-ca
-            caTag: 1.4.3-20191108-amd64
-      peer:
-        1.4.3-0:
-          default: true
-          version: 1.4.3-0
-          image:
-            peerInitImage: $IMAGE_REGISTRY/cp/ibp-init
-            peerInitTag: 2.1.1-20191108-amd64
-            peerImage: $IMAGE_REGISTRY/cp/ibp-peer
-            peerTag: 1.4.3-20191108-amd64
-            dindImage: $IMAGE_REGISTRY/cp/ibp-dind
-            dindTag: 1.4.3-20191108-amd64
-            fluentdImage: $IMAGE_REGISTRY/cp/ibp-fluentd
-            fluentdTag: 2.1.1-20191108-amd64
-            grpcwebImage: $IMAGE_REGISTRY/cp/ibp-grpcweb
-            grpcwebTag: 2.1.1-20191108-amd64
-            couchdbImage: $IMAGE_REGISTRY/cp/ibp-couchdb
-            couchdbTag: 2.3.1-20191108-amd64
-      orderer:
-        1.4.3-0:
-          default: true
-          version: 1.4.3-0
-          image:
-            ordererInitImage: $IMAGE_REGISTRY/cp/ibp-init
-            ordererInitTag: 2.1.1-20191108-amd64
-            ordererImage: $IMAGE_REGISTRY/cp/ibp-orderer
-            ordererTag: 1.4.3-20191108-amd64
-            grpcwebImage: $IMAGE_REGISTRY/cp/ibp-grpcweb
-            grpcwebTag: 2.1.1-20191108-amd64
+  registryURL: $IMAGE_REGISTRY/cp
+  imagePullSecret: "docker-key-secret"
   networkinfo:
     domain: $DOMAIN
   storage:
     console:
       class: $STORAGE_CLASS
       size: 10Gi
-
+      
 EOF
 ) > ibp-console.yaml
 

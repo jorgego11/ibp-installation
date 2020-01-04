@@ -8,6 +8,6 @@ subjects:
   namespace: ibp
 roleRef:
   kind: ClusterRole
-  name: ibp-operator
+  name: ibp
   apiGroup: rbac.authorization.k8s.io
 
