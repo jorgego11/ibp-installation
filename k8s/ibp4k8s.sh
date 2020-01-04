@@ -347,6 +347,8 @@ spec:
               value: "ibp-operator"
             - name: CLUSTERTYPE
               value: "IKS"
+            - name: INGRESS_NEEDED
+              value: "true"
           resources:
             requests:
               cpu: 100m
