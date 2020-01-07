@@ -15,6 +15,9 @@
 #    The password to the image registry.  
 #    This is obtained by making a request in https://github.ibm.com/IBM-Blockchain/ibp-requests/blob/master/ibp-on-openshift/README.md. 
 #
+#  IMAGE_PREFIX:
+#    This is the prefix string that is part of the image name (e.g. cp).
+#
 #  EMAIL:
 #    The login email for the IBP Console.
 #
@@ -77,6 +80,9 @@ log "IMAGE_REGISTRY is: $IMAGE_REGISTRY"
 
 IMAGE_REGISTRY_USER=`jq -r .IMAGE_REGISTRY_USER "$CONFIG_FILE"`
 log "IMAGE_REGISTRY_USER is: $IMAGE_REGISTRY_USER"
+
+IMAGE_PREFIX=`jq -r .IMAGE_PREFIX "$CONFIG_FILE"`
+log "IMAGE_PREFIX is: $IMAGE_PREFIX"
 
 EMAIL=`jq -r .EMAIL "$CONFIG_FILE"`
 log "EMAIL to use for the IBP console is: $EMAIL"
@@ -306,7 +312,7 @@ spec:
         - name: docker-key-secret
       containers:
         - name: ibp-operator
-          image: $IMAGE_REGISTRY/cp/ibp-operator:2.1.2-20191217-amd64
+          image: $IMAGE_REGISTRY/$IMAGE_PREFIX/ibp-operator:2.1.2-20191217-amd64
           command:
           - ibp-operator
           imagePullPolicy: Always
@@ -379,7 +385,7 @@ spec:
   serviceAccountName: default
   email: "$EMAIL"
   password: "$PASSWORD"
-  registryURL: $IMAGE_REGISTRY/cp
+  registryURL: $IMAGE_REGISTRY/$IMAGE_PREFIX
   imagePullSecret: "docker-key-secret"
   networkinfo:
     domain: $DOMAIN

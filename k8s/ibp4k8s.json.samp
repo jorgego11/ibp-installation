@@ -2,6 +2,7 @@
     "IMAGE_REGISTRY": "<image registry hostname>",
     "IMAGE_REGISTRY_USER": "<image registry user>",
     "IMAGE_REGISTRY_PASSWORD": "<image registry password>",
+    "IMAGE_PREFIX": "<image prefix>",
     "EMAIL": "<IBP userid>>",
     "PASSWORD": "<IBP password>",
     "NAMESPACE": "<K8s namespace for IBP>",
