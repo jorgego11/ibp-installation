@@ -1,6 +1,6 @@
 # IKS
 
-Of course, if you intend to use IBP on the IBM Cloud for a client engagement, you should simply leverage IBP SaaS on the IBM Cloud. The instructions here are just for educational purposes: IBP installation on a Kubernetes environment provided by a cloud provider (e.g. IBM Cloud).
+Of course, if you intend to use IBP on the IBM Cloud for a client engagement, you should simply leverage IBP SaaS on the IBM Cloud. The instructions here are just for educational purposes: IBP **v2.1.1** installation on a Kubernetes environment provided by a cloud provider (e.g. IBM Cloud).
 
 To install IBP on IKS (paid cluster), you should first determine the Ingress subdomain value that is assigned to your cluster. This value is your IP proxy value for the IBP Console installation. Please note that after provisioning your IKS cluster, it may take a few minutes to get an Ingress sub-domain assigned:
 

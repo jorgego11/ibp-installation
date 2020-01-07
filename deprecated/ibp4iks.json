@@ -1,7 +1,7 @@
 {
     "LOCAL_REGISTRY": "ip-ibp-images-team-docker-remote.artifactory.swg-devops.com",
     "USER": "ricardo.olivieri@us.ibm.com",
-    "EMAIL": "ricardo.olivieri@us.ibm.com",
+    "EMAIL": "john.doe@ibm.com",
     "LOCAL_REGISTRY_PASSWORD": "<password>",
     "NAMESPACE": "ibp",
     "PASSWORD": "passwd",

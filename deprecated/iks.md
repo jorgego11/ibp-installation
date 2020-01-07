@@ -1,4 +1,4 @@
-# IBP installation on IKS
+# IBP (v2.1.1) installation on IKS
 
 Once you have an operational IKS cluster up and running, you should be able to leverage the IBP installation script [ibp4iks.sh](ibp4iks.sh) in this folder. Before executing this script, make sure you have:
 
@@ -13,4 +13,4 @@ Once you have an operational IKS cluster up and running, you should be able to l
 1. As the script runs, pay attention to the output/logs. Watch out for errors; if a fatal error occurs, the script will stop its execution.
 
 ## Resources
-* [IKS and Proxy IP (ingress sub-domain)](iks.md)
+* [IKS and Proxy IP (ingress sub-domain)](iks-ingress.md)
