@@ -1,0 +1,10 @@
+{
+    "IMAGE_REGISTRY": "<image registry hostname>",
+    "IMAGE_REGISTRY_USER": "<image registry user>",
+    "IMAGE_REGISTRY_PASSWORD": "<image registry password>",
+    "EMAIL": "<IBP userid>>",
+    "PASSWORD": "<IBP password>",
+    "NAMESPACE": "<K8s namespace for IBP>",
+    "DOMAIN": "<domain name>",
+    "STORAGE_CLASS": "<storage class>"
+}
