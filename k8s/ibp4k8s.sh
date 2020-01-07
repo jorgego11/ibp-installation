@@ -121,7 +121,7 @@ executeCommand "kubectl create namespace $NAMESPACE"
 ### Define pod security policy (psp)
 (
 cat <<EOF
-apiVersion: extensions/v1beta1
+apiVersion: policy/v1beta1
 kind: PodSecurityPolicy
 metadata:
   name: ibm-blockchain-platform-psp

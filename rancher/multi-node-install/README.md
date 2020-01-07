@@ -40,7 +40,7 @@ The following are the steps I took for getting familiar with Rancher and install
 
 7) Before proceeding with next steps, I ensured my SSH key had been added to the ssh-agent; see [here](https://help.github.com/en/github/authenticating-to-github/generating-a-new-ssh-key-and-adding-it-to-the-ssh-agent) for instructions. Specifically, I made sure that my `~/.ssh/config` was updated accordingly.
 
-8) Installed RKE on my workstation (e.g. macOS laptop). See [Download the RKE binary](https://rancher.com/docs/rke/latest/en/installation/#download-the-rke-binary) for instructions.
+8) Installed RKE on my workstation (macOS) using homebrew. See [Alternative RKE MacOS X Install - Homebrew](https://rancher.com/docs/rke/latest/en/installation/#alternative-rke-macos-x-install-homebrew) for instructions.
 
 9) Created `rancher-cluster.yml` file and installed Kubernetes with RKE. See [here](https://rancher.com/docs/rancher/v2.x/en/installation/ha/kubernetes-rke/) for details. As reference, see [rancher-cluster.yml](rke-artifacts/rancher-cluster.yml).
 
@@ -54,16 +54,15 @@ The following are the steps I took for getting familiar with Rancher and install
     export KUBECONFIG=$PWD/kube_config_rancher-cluster.yml
     ```
 
-11) Followed instructions for [initializing Helm](https://rancher.com/docs/rancher/v2.x/en/installation/ha/helm-init/) and [installing Rancher](https://rancher.com/docs/rancher/v2.x/en/installation/ha/helm-rancher/) on the Kubernetes cluster. Make sure you select the **stable** Helm chart repository. Also, as part of the Rancher installation, for the SSL configuration, I used the `Rancher Generated Certificates` option (`ingress.tls.source=rancher`). See [here](https://rancher.com/docs/rancher/v2.x/en/installation/ha/helm-rancher/#choose-your-ssl-configuration) for further details. Finally, regarding the `hostname` argument for the Rancher installation, I used the hostname of the load balancer:
+11) Followed instructions for [installing Rancher using Helm](https://rancher.com/docs/rancher/v2.x/en/installation/ha/helm-rancher/) on the Kubernetes cluster. Make sure you select the **stable** Helm chart repository. Also, as part of the Rancher installation, for the SSL configuration, I used the `Rancher Generated Certificates` option (`ingress.tls.source=rancher`). See [here](https://rancher.com/docs/rancher/v2.x/en/installation/ha/helm-rancher/#choose-your-ssl-configuration) for further details. Please note that you will need to install `cert-manager`. Finally, regarding the `hostname` argument for the Rancher installation, I used the hostname of the load balancer:
 
     ```
-    helm install rancher-latest/rancher \
-        --name rancher \
+    helm install rancher rancher-stable/rancher \
         --namespace cattle-system \
         --set hostname=<load balancer hostname>
     ```
 
-12) Before proceeding any further, verified that the state of created cluster was `Active` (the name Rancher assigns to this cluster is `local`). This may take up to 10 minutes. You can check the state of the cluster by visiting the Rancher web console, which should be found at `https://<load balancer hostname>`.
+12) Before proceeding any further, verified that the state of created cluster was `Active` (the name Rancher assigns to this cluster is `local`). This may take up to 10 minutes. You can check the state of the cluster by visiting the Rancher web console, which should be found at `https://<load balancer hostname>`. If after waiting over 10 minutes the cluster is not active yet, then this workaround should do the trick: https://github.com/rancher/rancher/issues/16213#issuecomment-561851122
 
 13) Once Rancher was up and running and the cluster was `Active`, I added the [Local Path Provisioner](https://github.com/rancher/local-path-provisioner) as a storage class to the K8s cluster:
 
@@ -103,7 +102,8 @@ The following are the steps I took for getting familiar with Rancher and install
     ...
     ```
 
-16) Proceeded to install IBP on the cluster using the installation [script](../../k8s/ibp4k8s.sh) and a configuration file similar to this [one](../../k8sibp4k8s-2.json). Please note that the configuration file uses:
+16) Proceeded to install IBP on the cluster using the installation [script](../../k8s/ibp4k8s.sh) and a configuration file similar to this [one](../../k8sibp4k8s-2.json). Please note that the configuration file uses (among other configuration properties):
+
     * A storage class named `local-path`
     * A Kubernetes namespace value of `ibp` (you can use the namespace of your liking)
     * A domain value of `myibp.us`

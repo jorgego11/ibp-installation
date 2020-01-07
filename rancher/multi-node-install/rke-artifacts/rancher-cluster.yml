@@ -1,3 +1,5 @@
+kubernetes_version: "v1.16.3-rancher1-1"
+
 nodes:
   - address: rancher-node3.rtp.raleigh.ibm.com
     user: ibmadmin
