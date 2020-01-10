@@ -102,7 +102,7 @@ The following are the steps I took for getting familiar with Rancher and install
     ...
     ```
 
-16) Proceeded to install IBP on the cluster using the installation [script](../../k8s/ibp4k8s.sh) and a configuration file similar to this [one](../../k8sibp4k8s-2.json). Please note that the configuration file uses (among other configuration properties):
+16) Proceeded to install IBP on the cluster using the installation [script](../../scripts/README.md) and a corresponding configuration file similar to this [one](../../scripts/ibp4k8s.json.samp). Please note that the configuration file uses (among other configuration properties):
 
     * A storage class named `local-path`
     * A Kubernetes namespace value of `ibp` (you can use the namespace of your liking)

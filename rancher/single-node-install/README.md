@@ -79,7 +79,7 @@ Please note that instead of using a bare-metal machine, you can provision a VM o
     local-path   rancher.io/local-path   4s
     ```
 
-9) Finally, proceeded to install IBP using the installation [script](../../k8s/ibp4k8s.sh):
+9) Finally, proceeded to install IBP using the installation [script](../../scripts/README.md):
     * Updated storage class to `local-path` (instead of `default`).
     * Since this is a single node installation, I used the IP address assigned to the worker node as the domain (proxy IP) value (for a multi node installation, we would instead use a proxy IP address/domain).
 
