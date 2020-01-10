@@ -137,7 +137,12 @@ The following are the steps I took for getting familiar with Rancher and install
 ## References
 * [Ingress on Rancher](https://rancher.com/docs/rancher/v2.x/en/k8s-in-rancher/load-balancers-and-ingress/ingress/)
 * [Ingress Controllers on Rancher](https://rancher.com/docs/rke/latest/en/config-options/add-ons/ingress-controllers/)
-* [Removing Rancher](https://rancher.com/docs/rancher/v2.x/en/cluster-admin/cleaning-cluster-nodes/)
+* [Removing Rancher](https://rancher.com/docs/rancher/v2.x/en/cluster-admin/cleaning-cluster-nodes/) - The main takeaways from the procedure for uninstalling Rancher is that you need to perform the following steps on each one of the worker nodes in the K8s cluster: 
+    1. [Remove docker containers, images, and volumes](https://rancher.com/docs/rancher/v2.x/en/cluster-admin/cleaning-cluster-nodes/#docker-containers-images-and-volumes)
+    1. [Remove mounts from the system](https://rancher.com/docs/rancher/v2.x/en/cluster-admin/cleaning-cluster-nodes/#mounts)
+    1. Reboot the worker node
+    1. [Remove folders and files](https://rancher.com/docs/rancher/v2.x/en/cluster-admin/cleaning-cluster-nodes/#directories-and-files)
+
 * [Why Rancher?](https://medium.com/faun/rancher-one-place-for-all-kubernetes-clusters-51586d72858a)
 * [Kubernetes: One Cluster or Many?](https://content.pivotal.io/blog/kubernetes-one-cluster-or-many)
 * [Sharing Host VPN with VirtualBox guest](https://gist.github.com/patrickdappollonio/a82632298ca1e4536a2da488d0542f08)

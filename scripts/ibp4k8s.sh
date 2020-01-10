@@ -1,106 +1,20 @@
 #!/bin/bash
 
+##
+# Copyright IBM Corporation 2020
 #
-#  To run the script you need to create a configuration file and provide its path as an input parameter to this script.
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
 #
-#  See below for a description of rht configuration fields.
-#     
-#  IMAGE_REGISTRY_USER:
-#    The user for the image registry.
+# http://www.apache.org/licenses/LICENSE-2.0
 #
-#  IMAGE_REGISTRY
-#    The server name for the image regisrtry.
-#
-#  IMAGE_REGISTRY_PASSWORD:
-#    The password to the image registry.  
-#    This is obtained by making a request in https://github.ibm.com/IBM-Blockchain/ibp-requests/blob/master/ibp-on-openshift/README.md. 
-#
-#  IMAGE_PREFIX:
-#    This is the prefix string that is part of the image name (e.g. cp).
-#
-#  EMAIL:
-#    The login email for the IBP Console.
-#
-#  NAMESPACE:
-#    The name of your Kubernetes namespace.
-#
-#  PASSWORD:
-#    The password you will use to login to your IBP Console.  You will have to immediately change this
-#    upon your first login. 
-#
-#  DOMAIN:
-#    The domain value for your cluster domain, which should resolve to the IP address that is the entry point to the cluster.
-#
-#  STORAGE_CLASS:
-#    The name of the storage class that IBP should use.
-#
-
-function log {
-    echo "[$(date +"%m-%d-%Y %r")]: $*"
-}
-
-function executeCommand {
-  local command=$1
-  local continueOnError=$2
-  log "Executing: $command"
-  output=$(bash -c '('"$command"'); exit $?' 2>&1)
-  local retCode=$?
-  log $output
-
-  if (([ ! -z "$continueOnError" ] && [ "$continueOnError" = false ]) || [ -z "$continueOnError" ]) && [ $retCode -ne 0 ]
-  then
-    log "Exiting script due to fatal error (see above)."
-    exit $retCode
-  fi
-}
-
-CONFIG_FILE=$1
-
-### Checks
-if [ -z "$KUBECONFIG" ]
-then
-      log "KUBECONFIG is not set. Exiting script!"
-      exit 1
-else
-      log "KUBECONFIG is set to: $KUBECONFIG"
-fi
-
-if [ -z "$CONFIG_FILE" ]
-then
-      log "CONFIG_FILE is not set. Exiting script!"
-      exit 1
-fi
-
-log "Starting IBP installation process..."
-
-log "CONFIG_FILE is: $CONFIG_FILE"
-
-IMAGE_REGISTRY=`jq -r .IMAGE_REGISTRY "$CONFIG_FILE"`
-log "IMAGE_REGISTRY is: $IMAGE_REGISTRY"
-
-IMAGE_REGISTRY_USER=`jq -r .IMAGE_REGISTRY_USER "$CONFIG_FILE"`
-log "IMAGE_REGISTRY_USER is: $IMAGE_REGISTRY_USER"
-
-IMAGE_PREFIX=`jq -r .IMAGE_PREFIX "$CONFIG_FILE"`
-log "IMAGE_PREFIX is: $IMAGE_PREFIX"
-
-EMAIL=`jq -r .EMAIL "$CONFIG_FILE"`
-log "EMAIL to use for the IBP console is: $EMAIL"
-
-IMAGE_REGISTRY_PASSWORD=`jq -r .IMAGE_REGISTRY_PASSWORD "$CONFIG_FILE"`
-#log "IMAGE_REGISTRY_PASSWORD entitlement key is: $IMAGE_REGISTRY_PASSWORD"
-
-NAMESPACE=`jq -r .NAMESPACE "$CONFIG_FILE"`
-log "NAMESPACE is: $NAMESPACE"
-
-PASSWORD=`jq -r .PASSWORD "$CONFIG_FILE"`
-log "IBP Console Password is: $PASSWORD"
-
-DOMAIN=`jq -r .DOMAIN "$CONFIG_FILE"`
-log "Domain is: $DOMAIN"
-
-STORAGE_CLASS=`jq -r .STORAGE_CLASS "$CONFIG_FILE"`
-log "Storage class is: $STORAGE_CLASS"
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+##
 
 ### Delete resources from previous installation if they exist
 ### As reference, see https://kubernetes.io/docs/tasks/administer-cluster/namespaces/#deleting-a-namespace
@@ -110,10 +24,6 @@ executeCommand "kubectl delete clusterrolebinding $NAMESPACE" true
 
 #### Start deployment
 log "Starting IBP deployment...."
-
-### Get pods and storageclasses
-#kubectl get pods
-#kubectl get storageclasses
 
 ### Create k8s namespace for deployment
 executeCommand "kubectl create namespace $NAMESPACE"
@@ -362,7 +272,7 @@ spec:
               memory: 200Mi
 
 EOF
-) > ibp-operator.yaml
+)> ibp-operator.yaml
 
 executeCommand "kubectl apply -f ibp-operator.yaml -n $NAMESPACE"
 
@@ -395,21 +305,6 @@ spec:
       size: 10Gi
       
 EOF
-) > ibp-console.yaml
+)> ibp-console.yaml
 
 executeCommand "kubectl apply -f ibp-console.yaml -n $NAMESPACE"
-
-####
-#### Ok...deployment is complete. Verifying the installation.
-log "The installation is now complete!"
-log "Note: It will take approximately 10 minutes for the IBP console to be available."
-log "You can issue: kubectl get deployments -n $NAMESPACE"
-log "When both the ibp-operator and ibpconsole are in the 'Available' state, you are ready to roll!"
-log "To launch the IBP Console go to:"
-log "https://$NAMESPACE-ibpconsole-console.$DOMAIN"
-
-#kubectl get deployments -n $NAMESPACE
-#kubectl get pods -n $NAMESPACE
-#kubectl describe ibpconsole -n $NAMESPACE
-
-exit 0

@@ -11,10 +11,9 @@ Also, please note that manual installation of IBP v2 on IKS is **not** supported
 
 ## Table of contents
 
-1. [IBP on OpenShift](openshift/README.md)
+1. [IBP on K8s and OpenShift](scripts/README.md)
 1. [Rancher (single node install)](rancher/single-node-install/README.md)
 1. [Rancher (multi node install)](rancher/multi-node-install/README.md)
-1. [IBP on K8s](k8s/README.md)
 
 ## Additional resources
 

@@ -1,0 +1,11 @@
+{   "OC_LOGIN": "<full openshift login command>",
+    "IMAGE_REGISTRY": "<image registry hostname>",
+    "IMAGE_REGISTRY_USER": "<image registry user>",
+    "IMAGE_REGISTRY_PASSWORD": "<image registry password>",
+    "IMAGE_PREFIX": "<image prefix>",
+    "EMAIL": "<IBP userid>>",
+    "PASSWORD": "<IBP password>",
+    "PROJECT_NAME": "<OC project name for IBP>",
+    "DOMAIN": "<domain name>",
+    "STORAGE_CLASS": "<storage class>"
+}
