@@ -60,9 +60,16 @@
 #    The command looks similar to the following example:
 #    oc login https://cxxx-e.us-south.containers.cloud.ibm.com:31974 --token=xxxxxxx
 #
-#  PROJECT_NAME:
+#  OC_PROJECT_NAME:
 #    Only needed if deploying to an OpenShift environment.
 #    The name of the OpenShift project where IBP will be installed.
+#
+#  TLS_CERT:
+#     Optional value. The absolute path to the TLS public certificate file.
+#
+#  TLS_KEY: 
+#     Optional value. The absolute path to the TLS private key file.
+#
 
 ### Functions
 function log {
@@ -101,7 +108,8 @@ function verifyRequisites {
     then
         log "KUBECONFIG is not set. Exiting script!"
         exit 1
-    else
+    elif [ "$PLATFORM" = "k8s" ]
+    then
         log "KUBECONFIG is set to: $KUBECONFIG"
     fi
 }
@@ -153,6 +161,22 @@ log "IBP Console Password is: $PASSWORD"
 DOMAIN=`jq -r .DOMAIN "$CONFIG_FILE"`
 log "Domain is: $DOMAIN"
 
+TLS_CERT=`jq -r .TLS_CERT "$CONFIG_FILE"`
+if [ "$TLS_CERT" = "null" ]
+then
+  unset TLS_CERT
+else 
+  log "TLS certificate file is: $TLS_CERT"
+fi
+
+TLS_KEY=`jq -r .TLS_KEY "$CONFIG_FILE"`
+if [ "$TLS_KEY" = "null" ]
+then
+  unset TLS_KEY
+else
+  log "TLS private key file is: $TLS_KEY"
+fi
+
 STORAGE_CLASS=`jq -r .STORAGE_CLASS "$CONFIG_FILE"`
 log "Storage class is: $STORAGE_CLASS"
 
@@ -172,6 +196,52 @@ fi
 # Source corresponding installation script based on PLATFORM
 log "Starting IBP deployment..."
 source "${BASH_SOURCE%/*}/$PLATFORM_INSTALL_SCRIPT"
+
+### Wait 35 seconds before continuing... the operator should be running on your namespace
+### before you can apply the IBM Blockchain Platform console object.
+log "Sleeping for 35 seconds... waiting for operator to settle."
+sleep 35
+
+executeCommand "kubectl get deployment -n $NAMESPACE"
+
+if [ ! -z "$TLS_CERT" ] && [ ! -z "$TLS_KEY" ]
+then
+    executeCommand "kubectl create secret generic console-tls-secret --from-file=tls.crt=$TLS_CERT --from-file=tls.key=$TLS_KEY -n $NAMESPACE"
+fi
+
+### Define deployment for IBP console
+(
+cat<<EOF
+apiVersion: ibp.com/v1alpha1
+kind: IBPConsole
+metadata:
+  name: ibpconsole
+spec:
+  license: accept
+  serviceAccountName: default
+  email: "$EMAIL"
+  password: "$PASSWORD"
+  registryURL: $IMAGE_REGISTRY/$IMAGE_PREFIX
+  imagePullSecret: "docker-key-secret"
+  networkinfo:
+    domain: $DOMAIN
+  storage:
+    console:
+      class: $STORAGE_CLASS
+      size: 10Gi
+EOF
+)> ibp-console.yaml
+
+if [ ! -z "$TLS_CERT" ] && [ ! -z "$TLS_KEY" ]
+then
+    (
+cat<<EOF
+  tlsSecretName: console-tls-secret
+EOF
+)>> ibp-console.yaml
+fi
+
+executeCommand "kubectl apply -f ibp-console.yaml -n $NAMESPACE"
 
 #### Ok... deployment is complete. Verifying the installation.
 log "The installation is now complete!"

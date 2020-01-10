@@ -22,9 +22,6 @@ log "Deleting existing resources from previous runs..."
 executeCommand "kubectl delete namespaces $NAMESPACE" true
 executeCommand "kubectl delete clusterrolebinding $NAMESPACE" true
 
-#### Start deployment
-log "Starting IBP deployment...."
-
 ### Create k8s namespace for deployment
 executeCommand "kubectl create namespace $NAMESPACE"
 
@@ -61,7 +58,6 @@ spec:
   - FOWNER
   volumes:
   - '*'
-
 EOF
 )> ibp-psp.yaml
 
@@ -136,7 +132,6 @@ rules:
   - statefulsets
   verbs:
   - '*'
-
 EOF
 )> ibp-clusterrole.yaml
 
@@ -157,7 +152,6 @@ roleRef:
   kind: ClusterRole
   name: $NAMESPACE
   apiGroup: rbac.authorization.k8s.io
-
 EOF
 )> ibp-clusterrolebinding.yaml
 
@@ -270,41 +264,7 @@ spec:
             limits:
               cpu: 100m
               memory: 200Mi
-
 EOF
 )> ibp-operator.yaml
 
 executeCommand "kubectl apply -f ibp-operator.yaml -n $NAMESPACE"
-
-### Wait 35 seconds before continuing... the operator should be running on your namespace
-### before you can apply the IBM Blockchain Platform console object.
-log "Sleeping for 35 seconds... waiting for operator to settle."
-sleep 35
-
-executeCommand "kubectl get deployment -n $NAMESPACE"
-
-### Define deployment for IBP console
-(
-cat<<EOF
-apiVersion: ibp.com/v1alpha1
-kind: IBPConsole
-metadata:
-  name: ibpconsole
-spec:
-  license: accept
-  serviceAccountName: default
-  email: "$EMAIL"
-  password: "$PASSWORD"
-  registryURL: $IMAGE_REGISTRY/$IMAGE_PREFIX
-  imagePullSecret: "docker-key-secret"
-  networkinfo:
-    domain: $DOMAIN
-  storage:
-    console:
-      class: $STORAGE_CLASS
-      size: 10Gi
-      
-EOF
-)> ibp-console.yaml
-
-executeCommand "kubectl apply -f ibp-console.yaml -n $NAMESPACE"

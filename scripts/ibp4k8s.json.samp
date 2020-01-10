@@ -7,5 +7,7 @@
     "PASSWORD": "<IBP password>",
     "NAMESPACE": "<K8s namespace for IBP>",
     "DOMAIN": "<domain name>",
-    "STORAGE_CLASS": "<storage class>"
+    "STORAGE_CLASS": "<storage class>",
+    "TLS_CERT": "<absolute path to cert>",
+    "TLS_KEY": "<absolute path to key>"
 }

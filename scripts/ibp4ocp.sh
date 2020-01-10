@@ -68,7 +68,6 @@ supplementalGroups:
   type: RunAsAny
 volumes:
 - "*"
-
 EOF
 )> ibp-scc.yaml
 
@@ -166,7 +165,6 @@ rules:
   - '*'
   verbs:
   - '*'
-
 EOF
 )> ibp-clusterrole.yaml
 
@@ -188,7 +186,6 @@ roleRef:
   kind: ClusterRole
   name: $OC_PROJECT_NAME
   apiGroup: rbac.authorization.k8s.io
-
 EOF
 )> ibp-clusterrolebinding.yaml
 
@@ -297,39 +294,7 @@ spec:
             limits:
               cpu: 100m
               memory: 200Mi
-
 EOF
 )> ibp-operator.yaml
 
 executeCommand "kubectl apply -f ibp-operator.yaml -n $OC_PROJECT_NAME"
-
-### Wait 35 seconds before continuing... the operator should be running on your namespace
-### before you can apply the IBM Blockchain Platform console object.
-log "Sleeping for 35 seconds... waiting for operator to settle."
-sleep 35
-
-### Define deployment for IBP console
-(
-cat<<EOF  
-apiVersion: ibp.com/v1alpha1
-kind: IBPConsole
-metadata:
-  name: ibpconsole
-spec:
-  license: accept
-  serviceAccountName: default
-  email: "$EMAIL"
-  password: "$PASSWORD"
-  registryURL: $IMAGE_REGISTRY/$IMAGE_PREFIX
-  imagePullSecret: "docker-key-secret"
-  networkinfo:
-    domain: $DOMAIN
-  storage:
-    console:
-      class: $STORAGE_CLASS
-      size: 10Gi
-
-EOF
-)> ibp-console.yaml
-
-executeCommand "kubectl apply -f ibp-console.yaml -n $OC_PROJECT_NAME"
