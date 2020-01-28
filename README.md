@@ -1,5 +1,7 @@
 # IBP installation
 
+Please note that assets in this repository are meant to be used by the **Blockchain Labs** and **Tech Sales** teams (i.e. they are not meant to be given to a customer for free).
+
 This repository contains scripts for installing IBP v2 (software version) on:
 
 * An OpenShift cluster
