@@ -1,4 +1,4 @@
-## IBP installation on K8s
+## IBP installation on K8s (IBP v2.1.3)
 
 Once you have an operational open source Kubernetes cluster up and running, you can leverage the IBP installation script [install-ibp.sh](install-ibp.sh) in this folder. Before executing this script, make sure you have:
 
