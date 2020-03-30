@@ -1,4 +1,4 @@
-# IBP installation
+# IBP installation (v2.1.3)
 
 Please note that assets in this repository are meant to be used by the **Blockchain Labs** and **Tech Sales** teams (i.e. they are not meant to be given to a customer for free).
 
