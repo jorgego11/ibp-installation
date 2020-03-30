@@ -217,6 +217,8 @@ kind: IBPConsole
 metadata:
   name: ibpconsole
 spec:
+  arch:
+  - amd64
   license: accept
   serviceAccountName: default
   email: "$EMAIL"

@@ -99,6 +99,13 @@ rules:
   verbs:
   - '*'
 - apiGroups:
+  - ""
+  resources:
+  - namespaces
+  - nodes
+  verbs:
+  - 'get'
+- apiGroups:
   - apiextensions.k8s.io
   resources:
   - persistentvolumeclaims
@@ -197,7 +204,7 @@ spec:
       annotations:
         productName: "IBM Blockchain Platform"
         productID: "54283fa24f1a4e8589964e6e92626ec4"
-        productVersion: "2.1.2"
+        productVersion: "2.1.3"
     spec:
       hostIPC: false
       hostNetwork: false
@@ -213,10 +220,10 @@ spec:
                 values:
                 - amd64
       imagePullSecrets:
-        - name: docker-key-secret
+        - name: "docker-key-secret"
       containers:
         - name: ibp-operator
-          image: $IMAGE_REGISTRY/$IMAGE_PREFIX/ibp-operator:2.1.2-20191217-amd64
+          image: $IMAGE_REGISTRY/$IMAGE_PREFIX/ibp-operator:2.1.3-20200324-amd64
           command:
           - ibp-operator
           imagePullPolicy: Always
@@ -256,7 +263,7 @@ spec:
             - name: OPERATOR_NAME
               value: "ibp-operator"
             - name: CLUSTERTYPE
-              value: "IKS"
+              value: "K8S"
           resources:
             requests:
               cpu: 100m
