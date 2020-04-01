@@ -104,9 +104,9 @@ function verifyRequisites {
         exit 1
     fi
 
-    if [ "$PLATFORM" = "k8s" ] && [ -z "$KUBECONFIG" ]
+    if [ "$PLATFORM" = "k8s" ] && ( [ -z "$KUBECONFIG" ] && [ ! -f "$KUBE_CONFIG_FILE" ] )
     then
-        log "KUBECONFIG is not set. Exiting script!"
+        log "KUBECONFIG is not set and Kube config file does not exist. Exiting script!"
         exit 1
     elif [ "$PLATFORM" = "k8s" ]
     then
@@ -117,6 +117,7 @@ function verifyRequisites {
 ### Begin script execution
 PLATFORM=$1
 CONFIG_FILE=$2
+KUBE_CONFIG_FILE=~/.kube/config
 
 # Validate PLATFORM
 if [ "$PLATFORM" = "k8s" ]

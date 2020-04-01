@@ -1,8 +1,59 @@
 # IBP installation on Azure
 
-Thanks to Matthew Golby-Kirk/UK/IBM for the details below.
 
-For Azure OpenShift licencing, there are 4 main options.
+## IBP installation on Azure Kubernetes Service (AKS)
+
+Prerequisites:
+* Have an account with Azure
+* Install Azure CLI
+* Create an AKS cluster (using a 4x16 node such as Standard_B4ms seems to be big enough for testing)
+* Provision a public custom DNS domain
+
+Install IBP
+   * The commands below login into Azure, get connected to the cluster, verify connection and install:
+
+    //remove previous session just in case
+    az logout
+    // login to Azure
+    az login
+    // login to your cluster
+    az aks get-credentials --resource-group <ResourceGroup> --name <AKSClusterName>
+    // verify you are connected to the right cluster
+    kubectl get nodes
+    // Create a "configuration file" for the installation. Update the "DOMAIN" information based on your Azure networking configuration below.
+    // run the install as described under the scripts folder
+    ./install-ibp.sh k8s <config file>  
+
+
+Azure networking configuration:
+
+* The networking configuration requires a public custom DNS domain which will be used by the install script "configuration file".
+
+* We will create an ingress controller using the link below as guidance:
+
+  https://github.com/kubernetes/ingress-nginx/blob/master/docs/deploy/index.md#prerequisite-generic-deployment-command 
+    
+* Get a local copy and update *mandatory.yaml* by adding the --enable-ssl-passthrough flag in the line below
+
+  https://github.com/kubernetes/ingress-nginx/blob/master/deploy/static/mandatory.yaml#L227
+
+* This enables the SSL Passthrough feature, which is disabled by default. This is required to enable passthrough backends in Ingress objects. Now, lets apply the yaml file,  run:
+
+      kubectl apply -f mandatory.yaml
+
+* After mandatory.yaml run the "Provider Specific Steps" for Azure as explained in the same page. 
+
+* Make the public custom DNS domain point to the external IP defined by ingress-nginx LoadBalancer resource. To find the external IP look for ingress-nginx LoadBalancer from the command output below.
+
+      kubectl get services --all-namespaces
+
+
+
+
+
+## Azure OpenShift licencing
+
+(content from Matthew Golby-Kirk/UK/IBM )
 
 1. "Managed OpenShift on Azure".
 This is expensive as it is fully managed, like IBP v1 Enterprise - includes staff costs and the OpenShift licence etc. This is the simplest for a client to get going with as it includes the OpenShift Licence part and the Azure part is pay-per-use. It starts at around ~£3000 UKP per month and has a one year tie in, but discounts a 3 year purchase by ~60%. This is too expensive for internal use!
