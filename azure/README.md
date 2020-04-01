@@ -1,6 +1,5 @@
 # IBP installation on Azure
 
-
 ## IBP installation on Azure Kubernetes Service (AKS)
 
 Prerequisites:
@@ -24,7 +23,6 @@ Install IBP
     // run the install as described under the scripts folder
     ./install-ibp.sh k8s <config file>  
 
-
 Azure networking configuration:
 
 * The networking configuration requires a public custom DNS domain which will be used by the install script "configuration file".
@@ -47,13 +45,7 @@ Azure networking configuration:
 
       kubectl get services --all-namespaces
 
-
-
-
-
-## Azure OpenShift licencing
-
-(content from Matthew Golby-Kirk/UK/IBM )
+## Azure OpenShift licencing (from Matthew Golby-Kirk/UK/IBM)
 
 1. "Managed OpenShift on Azure".
 This is expensive as it is fully managed, like IBP v1 Enterprise - includes staff costs and the OpenShift licence etc. This is the simplest for a client to get going with as it includes the OpenShift Licence part and the Azure part is pay-per-use. It starts at around ~£3000 UKP per month and has a one year tie in, but discounts a 3 year purchase by ~60%. This is too expensive for internal use!
