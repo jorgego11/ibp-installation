@@ -26,6 +26,9 @@ log "Deleting existing resources from previous runs..."
 executeCommand "oc delete project $OC_PROJECT_NAME" true
 executeCommand "oc delete clusterrolebinding $OC_PROJECT_NAME" true
 
+log "Sleeping for 60 seconds... waiting for old resources to be deleted."
+sleep 60
+
 # Create new project
 executeCommand "oc new-project $OC_PROJECT_NAME"
 #executeCommand "oc get namespaces"
@@ -228,6 +231,8 @@ spec:
         productName: "IBM Blockchain Platform"
         productID: "54283fa24f1a4e8589964e6e92626ec4"
         productVersion: "2.1.3"
+        productChargedContainers: ""
+        productMetric: "VIRTUAL_PROCESSOR_CORE"
     spec:
       hostIPC: false
       hostNetwork: false
@@ -246,7 +251,7 @@ spec:
         - name: docker-key-secret
       containers:
         - name: ibp-operator
-          image: $IMAGE_REGISTRY/$IMAGE_PREFIX/ibp-operator:2.1.3-20200324-amd64
+          image: $IMAGE_REGISTRY/$IMAGE_PREFIX/ibp-operator:2.1.3-20200416-amd64
           command:
           - ibp-operator
           imagePullPolicy: Always
