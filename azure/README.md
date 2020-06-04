@@ -29,11 +29,11 @@ Azure networking configuration:
 
 * We will create an ingress controller using the link below as guidance:
 
-  https://github.com/kubernetes/ingress-nginx/blob/master/docs/deploy/index.md#prerequisite-generic-deployment-command 
+  https://github.com/kubernetes/ingress-nginx/blob/nginx-0.30.0/docs/deploy/index.md#prerequisite-generic-deployment-command
     
 * Get a local copy and update *mandatory.yaml* by adding the --enable-ssl-passthrough flag in the line below
 
-  https://github.com/kubernetes/ingress-nginx/blob/master/deploy/static/mandatory.yaml#L227
+  https://github.com/kubernetes/ingress-nginx/blob/nginx-0.30.0/deploy/static/mandatory.yaml#L227
 
 * This enables the SSL Passthrough feature, which is disabled by default. This is required to enable passthrough backends in Ingress objects. Now, lets apply the yaml file,  run:
 
