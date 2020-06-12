@@ -21,7 +21,7 @@ Install IBP
     kubectl get nodes
     // Create a "configuration file" for the installation. Update the "DOMAIN" information based on your Azure networking configuration below.
     // run the install as described under the scripts folder
-    ./install-ibp.sh k8s <config file>  
+    ./install-ibp.sh AKS <config file>  
 
 Azure networking configuration:
 
