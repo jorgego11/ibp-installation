@@ -23,11 +23,11 @@ Install IBP
     // run the install as described under the scripts folder
     ./install-ibp.sh AKS <config file>  
 
-Azure networking configuration:
+## Azure networking configuration - How to create an ingress controller
 
 * The networking configuration requires a public custom DNS domain which will be used by the install script "configuration file".
 
-* We will create an ingress controller using the link below as guidance:
+* Take a look a this link and follow the next step: 
 
   https://github.com/kubernetes/ingress-nginx/blob/nginx-0.30.0/docs/deploy/index.md#prerequisite-generic-deployment-command
     
@@ -35,7 +35,7 @@ Azure networking configuration:
 
   https://github.com/kubernetes/ingress-nginx/blob/nginx-0.30.0/deploy/static/mandatory.yaml#L227
 
-* This enables the SSL Passthrough feature, which is disabled by default. This is required to enable passthrough backends in Ingress objects. Now, lets apply the yaml file,  run:
+* This enables the SSL Passthrough feature, which is disabled by default. This is required to enable passthrough backends in Ingress objects. Now, lets apply the yaml file that creates an ingress controller, run:
 
       kubectl apply -f mandatory.yaml
 
