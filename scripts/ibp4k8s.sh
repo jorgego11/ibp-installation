@@ -69,7 +69,6 @@ cat<<EOF
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRole
 metadata:
-  creationTimestamp: null
   name: $NAMESPACE
 rules:
 - apiGroups:
@@ -84,6 +83,7 @@ rules:
   - "*"
   resources:
   - pods
+  - pod/logs
   - services
   - endpoints
   - persistentvolumeclaims
@@ -108,9 +108,14 @@ rules:
 - apiGroups:
   - apiextensions.k8s.io
   resources:
+  - customresourcedefinitions
+  verbs:
+  - get
+- apiGroups:
+  - apiextensions.k8s.io
+  resources:
   - persistentvolumeclaims
   - persistentvolumes
-  - customresourcedefinitions
   verbs:
   - '*'
 - apiGroups:
@@ -139,6 +144,7 @@ rules:
   - statefulsets
   verbs:
   - '*'
+
 EOF
 )> ibp-clusterrole.yaml
 
@@ -183,7 +189,7 @@ metadata:
     release: "operator"
     helm.sh/chart: "ibm-ibp"
     app.kubernetes.io/name: "ibp"
-    app.kubernetes.io/instance: "ibpoperator"
+    app.kubernetes.io/instance: "ibp"
     app.kubernetes.io/managed-by: "ibp-operator"
 spec:
   replicas: 1
@@ -199,12 +205,14 @@ spec:
         release: "operator"
         helm.sh/chart: "ibm-ibp"
         app.kubernetes.io/name: "ibp"
-        app.kubernetes.io/instance: "ibpoperator"
-        app.kubernetes.io/managed-by: "ibp-operator"
+        app.kubernetes.io/instance: "ibp"
+        app.kubernetes.io/managed-by: "ibp-operator"  
       annotations:
         productName: "IBM Blockchain Platform"
         productID: "54283fa24f1a4e8589964e6e92626ec4"
-        productVersion: "2.1.3"
+        productVersion: "2.5"
+        productChargedContainers: ""
+        productMetric: "VIRTUAL_PROCESSOR_CORE"
     spec:
       hostIPC: false
       hostNetwork: false
@@ -218,12 +226,16 @@ spec:
               - key: beta.kubernetes.io/arch
                 operator: In
                 values:
-                - amd64
+                - $ARCHITECTURE
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 1001
+        fsGroup: 2000
       imagePullSecrets:
-        - name: "docker-key-secret"
+        - name: docker-key-secret
       containers:
         - name: ibp-operator
-          image: $IMAGE_REGISTRY/$IMAGE_PREFIX/ibp-operator:2.1.3-20200324-amd64
+          image: $IMAGE_REGISTRY/$IMAGE_PREFIX/ibp-operator:2.5.0-20200714-$ARCHITECTURE
           command:
           - ibp-operator
           imagePullPolicy: Always
@@ -263,7 +275,7 @@ spec:
             - name: OPERATOR_NAME
               value: "ibp-operator"
             - name: CLUSTERTYPE
-              value: "K8S"
+              value: K8S
           resources:
             requests:
               cpu: 100m

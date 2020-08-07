@@ -70,6 +70,9 @@
 #  TLS_KEY: 
 #     Optional value. The absolute path to the TLS private key file.
 #
+#  ARCHITECTURE: 
+#     Optional value. The default value is 'amd64'. Valid values are 'amd64' or 's390x'.
+#
 
 ### Functions
 function log {
@@ -181,6 +184,13 @@ fi
 STORAGE_CLASS=`jq -r .STORAGE_CLASS "$CONFIG_FILE"`
 log "Storage class is: $STORAGE_CLASS"
 
+ARCHITECTURE=`jq -r .ARCHITECTURE "$CONFIG_FILE"`
+if [ "$ARCHITECTURE" = "null" ]
+then
+  ARCHITECTURE='amd64'
+fi
+log "ARCHITECTURE is: $ARCHITECTURE"
+
 if [ "$PLATFORM" = "oc" ]
 then
     OC_LOGIN=`jq -r .OC_LOGIN "$CONFIG_FILE"`
@@ -194,8 +204,15 @@ else
     log "NAMESPACE is: $NAMESPACE"
 fi
 
-# Source corresponding installation script based on PLATFORM
+# Being installation process
 log "Starting IBP deployment..."
+
+# Source webhook installation script
+log "Installing IBP webhook..."
+source "${BASH_SOURCE%/*}/ibp-webhook.sh"
+log "Completed installation of IBP webhook."
+
+# Source corresponding installation script based on PLATFORM
 source "${BASH_SOURCE%/*}/$PLATFORM_INSTALL_SCRIPT"
 
 ### Wait 35 seconds before continuing... the operator should be running on your namespace
@@ -213,19 +230,20 @@ fi
 ### Define deployment for IBP console
 (
 cat<<EOF
-apiVersion: ibp.com/v1alpha1
+apiVersion: ibp.com/v1alpha2
 kind: IBPConsole
 metadata:
   name: ibpconsole
 spec:
   arch:
-  - amd64
+  - $ARCHITECTURE
   license: accept
   serviceAccountName: default
   email: "$EMAIL"
   password: "$PASSWORD"
   registryURL: $IMAGE_REGISTRY/$IMAGE_PREFIX
-  imagePullSecret: "docker-key-secret"
+  imagePullSecrets:
+    - docker-key-secret
   networkinfo:
     domain: $DOMAIN
   storage:
@@ -246,9 +264,9 @@ fi
 
 executeCommand "kubectl apply -f ibp-console.yaml -n $NAMESPACE"
 
-#### Ok... deployment is complete. Verifying the installation.
-log "The installation is now complete!"
-log "Note: It will take approximately 10 minutes for the IBP console to be available."
+### Deployment is now complete
+log "IBP installation is now complete!"
+log "Note: It may take approximately 10 minutes for the IBP console to be available."
 log "You can issue: kubectl get deployments -n $NAMESPACE"
 log "When both the ibp-operator and ibpconsole are in the 'Available' state, you are ready to roll!"
 log "To launch the IBP Console go to:"

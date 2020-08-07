@@ -1,13 +1,14 @@
 {
-    "IMAGE_REGISTRY": "<image registry hostname>",
-    "IMAGE_REGISTRY_USER": "<image registry user>",
+    "IMAGE_REGISTRY": "<image registry hostname such as cp.icr.io>",
+    "IMAGE_REGISTRY_USER": "<image registry user such as cp>",
     "IMAGE_REGISTRY_PASSWORD": "<image registry password>",
-    "IMAGE_PREFIX": "<image prefix>",
+    "IMAGE_PREFIX": "<image prefix such as cp>",
     "EMAIL": "<IBP userid>>",
     "PASSWORD": "<IBP password>",
     "NAMESPACE": "<K8s namespace for IBP>",
     "DOMAIN": "<domain name>",
-    "STORAGE_CLASS": "<storage class>",
+    "STORAGE_CLASS": "<storage class such as default>",
+    "ARCHITECTURE": "<architecture type such as amd64>",
     "TLS_CERT": "<absolute path to cert>",
     "TLS_KEY": "<absolute path to key>"
 }
